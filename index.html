@@ -1,178 +1,107 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="ja">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>タイピング練習（テンプレート）</title>
-    <link rel="stylesheet" href="./style.css" />
-  </head>
-  <body>
-    <!--
-      このページは「タイピング練習の最小テンプレート」です。
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>俺のポートフォリオ & サーバー情報</title>
+    <style>
+        :root {
+            --main-bg: #1a1a1a;
+            --card-bg: #2d2d2d;
+            --accent-color: #007bff; /* 好みの色に変えてね */
+            --text-color: #ffffff;
+        }
 
-      仕組み（全体像）:
-      - HTML: 画面に出す部品（問題文、ボタン、成績）を置く
-      - CSS: 見た目（色、余白、フォント、強調表示）を決める
-      - JavaScript: キーボード入力を受け取り、正誤判定して画面を更新する
-    -->
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--main-bg);
+            color: var(--text-color);
+            margin: 0;
+            line-height: 1.6;
+        }
 
-    <div class="bg" aria-hidden="true">
-      <div class="bgLayer layer1"></div>
-      <div class="bgLayer layer2"></div>
-      <div class="bgLayer layer3"></div>
-      <div class="bgLayer layer4"></div>
-      <div class="bgLayer layer5"></div>
-      <div class="bgLayer layer6"></div>
-      <div class="bgLayer layer7"></div>
-      <div class="bgLayer layer8"></div>
-      <div class="bgLayer layer9"></div>
+        header {
+            height: 60vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background: linear-gradient(45deg, #1a1a1a, var(--accent-color));
+        }
+
+        .container {
+            max-width: 900px;
+            margin: -50px auto 50px;
+            padding: 0 20px;
+        }
+
+        section {
+            background: var(--card-bg);
+            padding: 30px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+
+        h1, h2 { color: var(--accent-color); }
+
+        .server-status {
+            display: inline-block;
+            background: #27ae60;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            margin-bottom: 10px;
+        }
+
+        .link-buttons a {
+            display: inline-block;
+            padding: 10px 20px;
+            margin-right: 10px;
+            background: var(--accent-color);
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            transition: 0.3s;
+        }
+
+        .link-buttons a:hover { opacity: 0.8; }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>Welcome to My Domain</h1>
+        <p>俺の活動記録とサーバー情報まとめ</p>
+    </header>
+
+    <div class="container">
+        <section id="about">
+            <h2>About Me</h2>
+            <p>ここにあなたの自己紹介を書いてください。例：「タイピングゲーム開発中のエンジニア志望です」など。</p>
+            <div class="link-buttons">
+                <a href="https://github.com/あなたのユーザー名">GitHub</a>
+                <a href="#">Twitter / X</a>
+            </div>
+        </section>
+
+        <section id="server">
+            <h2>Server Information</h2>
+            <div class="server-status">Online</div>
+            <p><strong>サーバー名：</strong> 俺の秘密基地</p>
+            <p><strong>内容：</strong> タイピングゲームのテストや雑談用サーバーです。</p>
+            <p><strong>ルール：</strong> 楽しく仲良く、荒らし厳禁。</p>
+            <a href="#" style="color: var(--accent-color);">サーバーに参加する（Discordなど）</a>
+        </section>
+
+        <section id="projects">
+            <h2>Current Projects</h2>
+            <ul>
+                <li><strong>Typing Quest:</strong> ももたろう×Typingerzの新作。開発中！</li>
+                <li><strong>My Profile Site:</strong> このサイトそのもの。</li>
+            </ul>
+        </section>
     </div>
 
-    <main class="app" aria-label="タイピング練習アプリ">
-      <header class="header">
-        <h1 class="title">タイピング練習（テンプレート）</h1>
-        <p class="subtitle">
-          キーボード入力で練習できます。Escでリセット、Enterで次の問題。
-        </p>
-      </header>
-
-      <section class="panel" aria-label="設定">
-        <div class="row">
-          <label class="field">
-            <span class="label">問題セット</span>
-            <select id="modeSelect" class="control" aria-label="問題セット">
-              <option value="romaji">ローマ字</option>
-              <option value="custom">カスタム</option>
-            </select>
-          </label>
-
-          <label class="field">
-            <span class="label">大文字小文字</span>
-            <select id="caseSelect" class="control" aria-label="大文字小文字の扱い">
-              <option value="strict">区別する</option>
-              <option value="ignore">区別しない</option>
-            </select>
-          </label>
-
-          <label class="field">
-            <span class="label">難易度</span>
-            <select id="difficultySelect" class="control" aria-label="難易度">
-              <option value="easy">やさしい</option>
-              <option value="normal" selected>ふつう</option>
-              <option value="hard">むずかしい</option>
-              <option value="gekimuzu">ゲキムズ</option>
-            </select>
-          </label>
-
-          <label class="field">
-            <span class="label">制限時間</span>
-            <select id="timeLimitSelect" class="control" aria-label="制限時間">
-              <option value="30">30秒</option>
-              <option value="60" selected>60秒</option>
-              <option value="90">90秒</option>
-              <option value="120">120秒</option>
-            </select>
-          </label>
-
-          <div class="actions">
-            <button id="startBtn" class="btn primary" type="button">開始</button>
-            <button id="stopBtn" class="btn warn" type="button" disabled>ストップ</button>
-            <button id="nextBtn" class="btn" type="button">次の問題</button>
-            <button id="resetBtn" class="btn ghost" type="button">リセット</button>
-          </div>
-        </div>
-
-        <div id="customArea" class="customArea" hidden>
-          <label class="field stretch">
-            <span class="label">カスタム問題（ここに貼り付け）</span>
-            <textarea
-              id="customText"
-              class="control textarea"
-              rows="4"
-              spellcheck="false"
-              aria-label="カスタム問題文"
-              placeholder="例: The quick brown fox jumps over the lazy dog."
-            ></textarea>
-          </label>
-          <p class="hint">
-            開始を押すと、上の文章がそのまま問題になります（改行も含む）。
-          </p>
-        </div>
-      </section>
-
-      <section class="panel" aria-label="問題">
-        <div class="status">
-          <div class="metric">
-            <span class="metricLabel">時間</span>
-            <span id="timeValue" class="metricValue">0.0s</span>
-          </div>
-          <div class="metric">
-            <span class="metricLabel">残り</span>
-            <span id="remainValue" class="metricValue">60.0s</span>
-          </div>
-          <div class="metric">
-            <span class="metricLabel">正解</span>
-            <span id="correctValue" class="metricValue">0</span>
-          </div>
-          <div class="metric">
-            <span class="metricLabel">ミス</span>
-            <span id="wrongValue" class="metricValue">0</span>
-          </div>
-          <div class="metric">
-            <span class="metricLabel">正確率</span>
-            <span id="accuracyValue" class="metricValue">0%</span>
-          </div>
-        </div>
-
-        <div class="targetWrap" id="targetWrap" aria-label="問題文">
-          <p id="target" class="target" aria-live="polite"></p>
-          <input
-            id="typingInput"
-            class="typingInput"
-            type="text"
-            inputmode="latin"
-            lang="en"
-            autocapitalize="off"
-            autocorrect="off"
-            autocomplete="off"
-            aria-hidden="true"
-          />
-        </div>
-
-        <div id="result" class="result" hidden aria-label="結果">
-          <h2 class="resultTitle">結果</h2>
-          <div class="resultGrid">
-            <div class="resultItem">
-              <span class="resultLabel">時間</span>
-              <span id="rTime" class="resultValue">0.0s</span>
-            </div>
-            <div class="resultItem">
-              <span class="resultLabel">WPM</span>
-              <span id="rWpm" class="resultValue">0</span>
-            </div>
-            <div class="resultItem">
-              <span class="resultLabel">CPM</span>
-              <span id="rCpm" class="resultValue">0</span>
-            </div>
-            <div class="resultItem">
-              <span class="resultLabel">正確率</span>
-              <span id="rAcc" class="resultValue">0%</span>
-            </div>
-          </div>
-          <p class="hint">
-            Enterで次の問題へ。難易度を上げたい場合は「コード」やカスタムで練習します。
-          </p>
-        </div>
-      </section>
-
-      <footer class="footer">
-        <p class="hint">
-          仕組みの解説は「explain.txt」を参照。問題文の追加は script.js の TEXT_SETS を編集。
-        </p>
-      </footer>
-    </main>
-
-    <script src="./script.js"></script>
-  </body>
+</body>
 </html>
-
