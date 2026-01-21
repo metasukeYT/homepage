@@ -39,10 +39,14 @@
 
         section {
             background: var(--card-bg);
-            padding: 30px;
+            padding: 40px 30px; /* 余白を増やして、文字が枠にぶつからないようにする */
             border-radius: 15px;
             margin-bottom: 30px;
             box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            /* はみ出しを防ぐための追加 */
+            height: auto;       /* 中身に合わせて枠が伸びるようにする */
+            overflow: hidden;   /* 念のため、枠の外に出るものを隠す */
+            display: block;
         }
 
         h1, h2 { color: var(--accent-color); }
