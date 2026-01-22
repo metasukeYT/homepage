@@ -10,20 +10,98 @@
         :root {
             --main-bg: #ffffffb5;
             --card-bg: #1a1a1a;
-            --accent-color: #b7b7b747; /* 好みの色に変えてね */
+            --accent-color: #00d2ff; /* 画像のような水色に変更 */
             --text-color: #ffffff;
         }
+
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background-image: url('background.jpg');
             background-size: cover;
             background-position: center;
-            background-attachment: fixed;/* 中央に合わせる */
+            background-attachment: fixed;
             color: var(--text-color);
             margin: 0;
             line-height: 1.6;
         }
-        
+
+        /* --- サイドメニューのCSS追加 --- */
+        #menu-toggle {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            cursor: pointer;
+            z-index: 1002;
+            padding: 10px;
+        }
+
+        /* 三本線ボタンのデザイン */
+        #menu-toggle span {
+            display: block;
+            width: 30px;
+            height: 4px;
+            background-color: white;
+            margin-bottom: 5px;
+            border-radius: 2px;
+        }
+
+        #side-menu {
+            position: fixed;
+            top: 0;
+            left: -280px; /* 最初は隠す */
+            width: 280px;
+            height: 100%;
+            background-color: #1a1a1a; /* 画像のような黒色 */
+            transition: 0.4s ease;
+            z-index: 1001;
+            padding-top: 60px;
+            box-shadow: 2px 0 10px rgba(0,0,0,0.5);
+        }
+
+        #side-menu.open {
+            left: 0; /* スッと出てくる動き */
+        }
+
+        .close-btn {
+            color: white;
+            padding: 10px 20px;
+            cursor: pointer;
+            text-align: right;
+        }
+
+        #side-menu ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        #side-menu ul li a {
+            display: block;
+            padding: 15px 25px;
+            color: var(--accent-color); /* 水色 */
+            text-decoration: none;
+            font-size: 1.2rem;
+            border-bottom: 1px solid #333;
+        }
+
+        #side-menu ul li a:hover {
+            background-color: #333;
+        }
+
+        #menu-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.6);
+            z-index: 1000;
+        }
+
+        #menu-overlay.open {
+            display: block;
+        }
+        /* --- ここまでサイドメニューのCSS --- */
 
         header {
             height: 60vh;
@@ -31,7 +109,7 @@
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            background: linear-gradient(45deg, #1a1a1a, var(--accent-color));
+            background: linear-gradient(45deg, #1a1a1a, #333);
         }
 
         .container {
@@ -62,19 +140,24 @@
         .link-buttons a {
             display: inline-block;
             padding: 10px 20px;
-            margin-right: 10px;
-            background: var(--accent-color);
+            margin: 5px;
+            background: #333;
             color: white;
             text-decoration: none;
             border-radius: 5px;
             transition: 0.3s;
+            border: 1px solid var(--accent-color);
         }
 
-        .link-buttons a:hover { opacity: 0.8; }
+        .link-buttons a:hover {
+            background: var(--accent-color);
+            color: #000;
+        }
     </style>
 </head>
 <body>
-    <div id="menu-toggle" onclick="toggleMenu()">
+
+<div id="menu-toggle" onclick="toggleMenu()">
     <span></span>
     <span></span>
     <span></span>
@@ -94,7 +177,7 @@
 <div id="menu-overlay" onclick="toggleMenu()"></div>
 
     <header>
-        <h1></h1>
+        <h1>METASUKE</h1>
         <p>めたすけのホームページ</p>
     </header>
 
@@ -104,11 +187,10 @@
             <p>最近バイブコーディング始めました！</p>
             <p>自分でもコード書きたい...</p>
             <div class="link-buttons">
-                <a href="https://www.youtube.com/@metasukech">Youtube Channel</a>
-                <a href="https://www.youtube.com/@metasuke-271">Sub Channel</a>
-                <a href="https://www.youtube.com/@himajin_kai">暇人の会</a>
-                <a href="https://www.scratch.mit.edu/users/mc_karbon/">Scratch</a>
-                <a href="https://www.geartics.com/metasukech">Device</a>
+                <a href="https://www.youtube.com/@metasukech" target="_blank">Youtube Channel</a>
+                <a href="https://www.youtube.com/@metasuke-271" target="_blank">Sub Channel</a>
+                <a href="https://www.scratch.mit.edu/users/mc_karbon/" target="_blank">Scratch</a>
+                <a href="https://www.geartics.com/metasukech" target="_blank">Device</a>
             </div>
         </section>
 
@@ -119,8 +201,8 @@
             <p><strong>内容：</strong> 主にPvPです。サバイバルもあります。</p>
             <p><strong>ルール：</strong> Not Cheating Bruh!</p>
             <div class="link-buttons">
-                <a href="https://yuuma57475.github.io/zemusite/">HomePage</a>
-                <a href="https://discord.gg/SaEtNBVjBa">Discord</a>
+                <a href="https://yuuma57475.github.io/zemusite/" target="_blank">HomePage</a>
+                <a href="https://discord.gg/SaEtNBVjBa" target="_blank">Discord</a>
             </div>
         </section>
 
@@ -128,12 +210,13 @@
             <h2>Current Projects</h2>
             <ul>
                 <li><strong>Typing Quest:</strong> 新タイピングゲーム開発中！</li>
-                <li><strong>ROD WARS:</strong> Plugin開発中！早くほしいなら金払え！</li>
-                <li><strong>Parkou: </strong> ParkourPlugin開発中！HypixelのロビーのようなPlugin作ってます！</li>
+                <li><strong>ROD WARS:</strong> Plugin開発中！</li>
+                <li><strong>Parkour:</strong> ParkourPlugin開発中！Hypixelのロビーのようなものを作っています！</li>
             </ul>
         </section>
     </div>
-    <script>
+
+<script>
 function toggleMenu() {
     document.getElementById("side-menu").classList.toggle("open");
     document.getElementById("menu-overlay").classList.toggle("open");
@@ -142,23 +225,3 @@ function toggleMenu() {
 
 </body>
 </html>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
