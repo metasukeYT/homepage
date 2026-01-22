@@ -1,0 +1,61 @@
+/* 三本線ボタンのデザイン */
+#menu-toggle {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    cursor: pointer;
+    z-index: 1000;
+}
+#menu-toggle span {
+    display: block;
+    width: 30px;
+    height: 4px;
+    background-color: white;
+    margin-bottom: 5px;
+}
+
+/* メニュー本体（最初は画面の外） */
+#side-menu {
+    position: fixed;
+    top: 0;
+    left: -250px; /* 画面の左に隠す */
+    width: 250px;
+    height: 100%;
+    background-color: #222;
+    transition: 0.3s; /* 動くスピード */
+    z-index: 1001;
+    padding-top: 60px;
+}
+
+/* メニューが開いた時のクラス */
+#side-menu.open {
+    left: 0;
+}
+
+/* メニュー内のリンク */
+#side-menu ul {
+    list-style: none;
+    padding: 0;
+}
+#side-menu ul li a {
+    display: block;
+    padding: 15px 20px;
+    color: #00acee; /* 画像のような水色 */
+    text-decoration: none;
+    font-size: 18px;
+}
+
+/* 背景を暗くする処理 */
+#menu-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.5);
+    z-index: 999;
+}
+#menu-overlay.open {
+    display: block;
+}
