@@ -23,6 +23,7 @@
             margin: 0;
             line-height: 1.6;
         }
+        
 
         header {
             height: 60vh;
@@ -73,6 +74,24 @@
     </style>
 </head>
 <body>
+    <div id="menu-toggle" onclick="toggleMenu()">
+    <span></span>
+    <span></span>
+    <span></span>
+</div>
+
+<div id="side-menu">
+    <div class="close-btn" onclick="toggleMenu()">&times; close-Btn</div>
+    <nav>
+        <ul>
+            <li><a href="index.html">Home</a></li>
+            <li><a href="parkour.html">Parkour Plugin</a></li>
+            <li><a href="forum.html">Forum (掲示板)</a></li>
+        </ul>
+    </nav>
+</div>
+
+<div id="menu-overlay" onclick="toggleMenu()"></div>
 
     <header>
         <h1></h1>
@@ -117,6 +136,7 @@
 
 </body>
 </html>
+
 
 
 
