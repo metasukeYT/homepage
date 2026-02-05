@@ -4,134 +4,223 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Forum ｜ METASUKE</title>
+    <link rel="icon" href="favicon.jpg" type="image/jpeg">
     <style>
-        /* 基本設定 */
+        :root {
+            --main-bg: #1a1a1a;
+            --card-bg: rgba(35, 35, 35, 0.95);
+            --accent-color: #00d2ff; 
+            --text-color: #ffffff;
+        }
+
         body {
-            background-color: #121212;
-            color: #e0e0e0;
-            font-family: "Helvetica Neue", Arial, "Hiragino Kaku Gothic ProN", "Hiragino Sans", Meiryo, sans-serif;
-            margin: 0;
-            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-image: url('background.jpg');
+            background-size: cover; 
+            background-position: center; 
+            background-attachment: fixed;
+            background-color: #111; /* 画像がない時の保険 */
+            color: var(--text-color); 
+            margin: 0; 
             line-height: 1.6;
         }
 
-        .container {
-            max-width: 800px;
-            margin: 0 auto;
-            padding: 40px 20px;
-        }
+        /* --- UI Elements --- */
+        .lang-switcher { position: fixed; top: 20px; right: 20px; z-index: 1100; }
+        .lang-switcher select { background: rgba(26, 26, 26, 0.8); color: var(--accent-color); border: 1px solid var(--accent-color); padding: 8px 12px; border-radius: 6px; cursor: pointer; font-weight: bold; backdrop-filter: blur(5px); outline: none; }
+        #google_translate_element, .skiptranslate, .goog-te-banner-frame { display: none !important; }
 
-        h1 {
-            text-align: center;
-            color: #00d2ff;
-            font-size: 2.5rem;
-            margin-bottom: 40px;
-            text-shadow: 0 0 10px rgba(0, 210, 255, 0.3);
-        }
+        #menu-toggle { position: fixed; top: 20px; left: 20px; cursor: pointer; z-index: 1002; padding: 10px; }
+        #menu-toggle span { display: block; width: 30px; height: 4px; background-color: white; margin-bottom: 5px; border-radius: 2px; }
+        
+        #side-menu { position: fixed; top: 0; left: -280px; width: 280px; height: 100%; background-color: #1a1a1a; transition: 0.4s ease; z-index: 1001; padding-top: 60px; box-shadow: 2px 0 10px rgba(0,0,0,0.5); }
+        #side-menu.open { left: 0; }
+        #side-menu ul { list-style: none; padding: 0; }
+        #side-menu ul li a { display: block; padding: 15px 25px; color: var(--accent-color); text-decoration: none; font-size: 1.2rem; border-bottom: 1px solid #333; }
+        
+        #menu-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 1000; }
+        #menu-overlay.open { display: block; }
 
-        /* 投稿フォームのスタイル */
-        .post-form {
-            background: #1e1e1e;
-            padding: 25px;
-            border-radius: 16px;
-            margin-bottom: 50px;
-            border: 1px solid #333;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
-        }
+        header { height: 35vh; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; background: rgba(0,0,0,0.4); }
+        header h1 { font-size: 3.5rem; margin: 0; color: var(--accent-color); text-shadow: 2px 2px 15px rgba(0, 0, 0, 0.9); }
+        header p { font-size: 1.1rem; margin-top: 10px; }
 
-        input[type="text"],
-        textarea {
-            width: 100%;
-            padding: 12px 15px;
-            margin-bottom: 15px;
-            background: #2a2a2a;
-            color: white;
-            border: 1px solid #444;
-            border-radius: 8px;
-            box-sizing: border-box; /* 幅の計算を正しくする */
+        .container { max-width: 900px; margin: -30px auto 50px; padding: 0 20px; position: relative; z-index: 1; }
+
+        /* --- Forum Cards --- */
+        .forum-card { 
+            background: var(--card-bg); 
+            padding: 25px; 
+            border-radius: 15px; 
+            margin-bottom: 20px; 
+            border-left: 5px solid var(--accent-color); 
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            transition: 0.3s; 
+        }
+        .forum-card:hover { transform: translateY(-3px); background: rgba(45, 45, 45, 0.98); }
+        
+        .meta { font-size: 0.85rem; color: #aaa; margin-bottom: 15px; display: flex; align-items: center; flex-wrap: wrap; gap: 10px; }
+        .tag { background: #00d2ff22; padding: 2px 10px; border-radius: 4px; color: var(--accent-color); border: 1px solid var(--accent-color); font-size: 0.75rem; font-weight: bold; }
+        
+        .forum-card h3 { margin: 0 0 10px 0; font-size: 1.5rem; color: #fff; }
+        .forum-card p { margin: 0; color: #ccc; white-space: pre-wrap; word-break: break-all; }
+
+        /* --- Form --- */
+        .forum-form { 
+            background: var(--card-bg); 
+            padding: 30px; 
+            border-radius: 15px; 
+            margin-bottom: 40px; 
+            display: none; 
+            border: 1px solid var(--accent-color); 
+            box-shadow: 0 0 20px rgba(0, 210, 255, 0.2);
+        }
+        .forum-form.active { display: block; animation: slideDown 0.4s ease; }
+        
+        @keyframes slideDown { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
+
+        input, textarea { 
+            width: 100%; 
+            padding: 12px; 
+            margin-bottom: 15px; 
+            border-radius: 8px; 
+            border: 1px solid #444; 
+            background: #111; 
+            color: #fff; 
+            box-sizing: border-box; 
+            font-size: 1rem;
+            outline: none;
+        }
+        input:focus, textarea:focus { border-color: var(--accent-color); }
+
+        .btn-main { 
+            background: var(--accent-color); 
+            color: #000; 
+            padding: 12px 30px; 
+            border: none; 
+            border-radius: 8px; 
+            font-weight: bold; 
+            cursor: pointer; 
+            transition: 0.3s; 
             font-size: 1rem;
         }
+        .btn-main:hover { transform: scale(1.05); box-shadow: 0 0 15px var(--accent-color); }
+        .btn-main:disabled { background: #555; cursor: not-allowed; }
 
-        input:focus, textarea:focus {
-            border-color: #00d2ff;
-            outline: none;
-            background: #333;
-        }
-
-        button {
-            width: 100%;
-            padding: 15px;
-            background: linear-gradient(135deg, #00d2ff 0%, #00a1ff 100%);
-            color: #000;
-            border: none;
-            border-radius: 8px;
-            font-weight: bold;
-            font-size: 1.1rem;
-            cursor: pointer;
-            transition: transform 0.2s, box-shadow 0.2s;
-        }
-
-        button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(0, 210, 255, 0.4);
-        }
-
-        /* 掲示板カードのスタイル */
-        .forum-card {
-            background: #252525;
-            padding: 20px;
-            border-radius: 12px;
-            margin-bottom: 20px;
-            border-left: 5px solid #00d2ff;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
-        }
-
-        .meta {
-            color: #00d2ff;
-            font-size: 0.85rem;
-            margin-bottom: 10px;
-            display: flex;
-            justify-content: space-between;
-        }
-
-        .post-title {
-            margin: 0 0 10px 0;
-            font-size: 1.3rem;
-            color: #fff;
-        }
-
-        .post-content {
-            margin: 0;
-            color: #bbb;
-            white-space: pre-wrap; /* 改行を反映させる */
-        }
-
-        #forumList {
-            margin-top: 20px;
-        }
-
-        .loading {
-            text-align: center;
-            color: #888;
-        }
+        #forumList { margin-top: 20px; }
+        .loading-text { text-align: center; color: var(--accent-color); font-weight: bold; padding: 20px; }
     </style>
 </head>
 <body>
 
-<div class="container">
+<div class="lang-switcher">
+    <select id="langSelect" onchange="translatePage(this.value)" class="notranslate">
+        <option value="">Language</option>
+        <option value="ja">日本語</option>
+        <option value="en">English</option>
+        <option value="ko">한국어</option>
+        <option value="zh-CN">简体中文</option>
+        <option value="vi">Tiếng Việt</option>
+    </select>
+</div>
+<div id="google_translate_element"></div>
+
+<div id="menu-toggle" onclick="toggleMenu()"><span></span><span></span><span></span></div>
+<div id="side-menu">
+    <nav><ul>
+        <li><a href="index.html">Home</a></li>
+        <li><a href="store.html">Store</a></li>
+        <li><a href="forum.html">Forum</a></li>
+        <li><a href="plugin.html">Plugin配布</a></li>
+    </ul></nav>
+</div>
+<div id="menu-overlay" onclick="toggleMenu()"></div>
+
+<header>
     <h1>Community Forum</h1>
+    <p>スプレッドシート連携・完全無料掲示板</p>
+</header>
 
-    <div class="post-form">
-        <input type="text" id="userName" placeholder="名前">
-        <input type="text" id="postTitle" placeholder="タイトル（件名）">
-        <textarea id="postContent" placeholder="メッセージを入力してください..." rows="4"></textarea>
-        <button onclick="submitPost()">掲示板に投稿する</button>
+<div class="container">
+    <div class="post-trigger" style="text-align:center; margin-bottom:30px;">
+        <button class="btn-main notranslate" onclick="toggleForm()">+ Create New Post</button>
     </div>
 
-    <div id="forumList">
-        <p class="loading">投稿を読み込んでいます...</p>
+    <div id="postForm" class="forum-form">
+        <input type="text" placeholder="名前 (Name)" id="userName">
+        <input type="text" placeholder="タイトル (Title)" id="postTitle">
+        <textarea placeholder="内容 (Content)" id="postContent" rows="5"></textarea>
+        <button class="btn-main notranslate" onclick="submitPost()">Submit Post</button>
     </div>
+
+    <div id="forumList"><p class="loading-text">読み込み中...</p></div>
 </div>
 
 <script>
-    const APP_URL = "
+    const APP_URL = "https://script.google.com/a/macros/apps.naniwa.ed.jp/s/AKfycbyg_np9sFOCSETEeWyN0_p-RgZLwukKWnMuySo_LHkQl9hAtYE6Z3IjXOKle4qyhv-m1w/exec";
+
+    async function loadPosts() {
+        try {
+            const response = await fetch(APP_URL);
+            const posts = await response.json();
+            const list = document.getElementById('forumList');
+            list.innerHTML = '';
+            
+            if (posts.length === 0) {
+                list.innerHTML = "<p style='text-align:center;'>まだ投稿がありません。</p>";
+                return;
+            }
+
+            posts.reverse().forEach(p => {
+                const date = new Date(p[0]).toLocaleString('ja-JP');
+                list.innerHTML += `
+                    <div class="forum-card">
+                        <div class="meta">
+                            <span class="tag">Post</span>
+                            <span><b>${p[1]}</b></span>
+                            <span>${date}</span>
+                        </div>
+                        <h3>${p[2]}</h3>
+                        <p>${p[3]}</p>
+                    </div>
+                `;
+            });
+        } catch (e) {
+            document.getElementById('forumList').innerHTML = "<p style='text-align:center;'>読み込みに失敗しました。GASの設定を確認してください。</p>";
+        }
+    }
+
+    async function submitPost() {
+        const btn = document.querySelector("#postForm .btn-main");
+        const user = document.getElementById('userName').value || "Guest";
+        const title = document.getElementById('postTitle').value;
+        const content = document.getElementById('postContent').value;
+
+        if (!title || !content) {
+            alert("タイトルと内容を入力してください。");
+            return;
+        }
+
+        btn.innerText = "Sending...";
+        btn.disabled = true;
+
+        const data = { user, title, content };
+
+        try {
+            await fetch(APP_URL, {
+                method: "POST",
+                mode: "no-cors",
+                body: JSON.stringify(data)
+            });
+
+            alert("送信完了！");
+            location.reload(); 
+        } catch (e) {
+            alert("エラーが発生しました。");
+            btn.disabled = false;
+            btn.innerText = "Submit Post";
+        }
+    }
+
+    function toggleForm() { document.getElementById('postForm').classList.toggle('active'); }
+    function toggleMenu() { document.getElementById("side-menu").classList.toggle("open"); document.getElementById
