@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>めたすけ ｜ チャットコミュニティ</title>
+    <title>METASUKE ｜ チャットコミュニティ</title>
     
     <link rel="icon" href="favicon.jpg" type="image/jpeg">
     <style>
@@ -26,213 +26,35 @@
             line-height: 1.6;
         }
 
-        /* --- サイドメニューCSS --- */
+        /* --- サイドメニュー等の共通CSS --- */
         #menu-toggle { position: fixed; top: 20px; left: 20px; cursor: pointer; z-index: 1002; padding: 10px; }
         #menu-toggle span { display: block; width: 30px; height: 4px; background-color: white; margin-bottom: 5px; border-radius: 2px; }
-        #side-menu { position: fixed; top: 0; left: -280px; width: 280px; height: 100%; background-color: #1a1a1a; transition: 0.4s ease; z-index: 1001; padding-top: 60px; box-shadow: 2px 0 10px rgba(0,0,0,0.5); }
+        #side-menu { position: fixed; top: 0; left: -280px; width: 280px; height: 100%; background-color: #1a1a1a; transition: 0.4s ease; z-index: 1001; padding-top: 60px; }
         #side-menu.open { left: 0; }
         #side-menu ul { list-style: none; padding: 0; }
-        #side-menu ul li a { display: block; padding: 15px 25px; color: var(--accent-color); text-decoration: none; font-size: 1.2rem; border-bottom: 1px solid #333; }
+        #side-menu ul li a { display: block; padding: 15px 25px; color: var(--accent-color); text-decoration: none; border-bottom: 1px solid #333; }
+        .close-btn { color: white; padding: 10px 20px; cursor: pointer; text-align: right; }
         #menu-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 1000; }
         #menu-overlay.open { display: block; }
-        .close-btn { color: white; padding: 10px 20px; cursor: pointer; text-align: right; }
 
-        /* --- チャットUI --- */
-        .container { max-width: 800px; margin: 80px auto 50px; padding: 0 20px; }
-        
+        /* チャット専用スタイル */
+        .chat-container {
+            max-width: 900px;
+            margin: 100px auto 50px;
+            padding: 0 20px;
+        }
+
         .chat-box {
             background: var(--card-bg);
             padding: 20px;
             border-radius: 15px;
-            height: 450px;
+            height: 400px;
             overflow-y: auto;
-            border: 1px solid rgba(0, 210, 255, 0.3);
+            border: 1px solid #444;
             margin-bottom: 20px;
             display: flex;
             flex-direction: column;
             backdrop-filter: blur(5px);
         }
 
-        .message { margin-bottom: 15px; padding: 10px; border-bottom: 1px solid rgba(255,255,255,0.1); }
-        .msg-name { color: var(--accent-color); font-weight: bold; display: block; margin-bottom: 5px; }
-        .msg-text { word-wrap: break-word; white-space: pre-wrap; }
-
-        .input-area {
-            background: var(--card-bg);
-            padding: 20px;
-            border-radius: 15px;
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-        }
-
-        input[type="text"] {
-            background: rgba(0, 0, 0, 0.5);
-            border: 1px solid #444;
-            color: white;
-            padding: 12px;
-            border-radius: 5px;
-            outline: none;
-            transition: 0.3s;
-        }
-        input[type="text"]:focus { border-color: var(--accent-color); }
-        input:read-only { opacity: 0.6; cursor: not-allowed; background: rgba(50, 50, 50, 0.5); }
-
-        .btn-send {
-            background: var(--accent-color);
-            color: #000;
-            border: none;
-            padding: 12px;
-            border-radius: 5px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: 0.3s;
-        }
-        .btn-send:hover { background: #00b8e6; transform: translateY(-2px); }
-        
-        #statusLabel { font-size: 0.85rem; text-align: center; min-height: 1.2rem; }
-    </style>
-</head>
-<body>
-
-<div id="menu-toggle" onclick="toggleMenu()">
-    <span></span><span></span><span></span>
-</div>
-
-<div id="side-menu">
-    <nav>
-        <ul>
-            <li><a href="index.html">Home</a></li>
-            <li><a href="store.html">Store</a></li>
-            <li><a href="forum.html">Forum</a></li>
-            <li><a href="plugin.html">Plugin配布</a></li>
-            <li><a href="chat.html">Chat・Community</a></li>
-        </ul>
-    </nav>
-    <div class="close-btn" onclick="toggleMenu()">&times; Close</div>
-</div>
-<div id="menu-overlay" onclick="toggleMenu()"></div>
-
-<div class="container">
-    <h2 style="text-align: center; text-shadow: 2px 2px 10px #000;">CHAT COMMUNITY</h2>
-    
-    <div class="chat-box" id="chatBox">
-        <div class="message">
-            <span class="msg-name">System</span>
-            <div class="msg-text">接続中...</div>
-        </div>
-    </div>
-
-    <div class="input-area">
-        <input type="text" id="userName" placeholder="名前を入力（一度使うと固定されます）" maxlength="15">
-        <input type="text" id="userMsg" placeholder="メッセージを入力..." maxlength="200">
-        <button class="btn-send" onclick="sendMessage()" id="sendBtn">送信</button>
-        <div id="statusLabel"></div>
-    </div>
-</div>
-
-<script>
-    const GAS_URL = "https://script.google.com/macros/s/AKfycbxJhd0Y5CemLGBnoJoWVYEpN7G2gmX3yYX0LJbSkVVgtJl3MRN3LIw6YgDBA3aqHV8Sog/exec";
-
-    // ページ読み込み時の処理
-    window.onload = () => {
-        const savedName = localStorage.getItem("chat_user_name");
-        if (savedName) {
-            const nameInput = document.getElementById("userName");
-            nameInput.value = savedName;
-            nameInput.readOnly = true;
-        }
-        fetchMessages();
-        setInterval(fetchMessages, 1000); // 1秒ごとに自動更新
-    };
-
-    function toggleMenu() {
-        document.getElementById("side-menu").classList.toggle("open");
-        document.getElementById("menu-overlay").classList.toggle("open");
-    }
-
-    async function sendMessage() {
-        const nameInput = document.getElementById("userName");
-        const msgInput = document.getElementById("userMsg");
-        const status = document.getElementById("statusLabel");
-        const btn = document.getElementById("sendBtn");
-
-        const name = nameInput.value.trim();
-        const message = msgInput.value.trim();
-
-        if (!name || !message) {
-            status.innerText = "名前とメッセージを入力してください";
-            status.style.color = "var(--error-color)";
-            return;
-        }
-
-        btn.disabled = true;
-        status.innerText = "送信中...";
-        status.style.color = "var(--accent-color)";
-
-        try {
-            const response = await fetch(GAS_URL, {
-                method: "POST",
-                body: JSON.stringify({ name: name, message: message })
-            });
-            const result = await response.json();
-
-            if (result.success) {
-                // 名前をブラウザに保存
-                localStorage.setItem("chat_user_name", name);
-                nameInput.readOnly = true;
-                
-                msgInput.value = "";
-                status.innerText = "送信完了！";
-                status.style.color = "#2ecc71";
-                fetchMessages();
-            } else {
-                // GAS側で名前重複（偽造防止）に引っかかった場合
-                status.innerText = result.error || "その名前は既に使用されています。";
-                status.style.color = "var(--error-color)";
-            }
-        } catch (e) {
-            status.innerText = "エラー：送信に失敗しました";
-            status.style.color = "var(--error-color)";
-        } finally {
-            btn.disabled = false;
-        }
-    }
-
-    async function fetchMessages() {
-        try {
-            const response = await fetch(GAS_URL);
-            const data = await response.json();
-            const chatBox = document.getElementById("chatBox");
-            
-            chatBox.innerHTML = "";
-
-            if (!data.messages || data.messages.length === 0) {
-                chatBox.innerHTML = '<div class="message"><div class="msg-text">メッセージがありません。</div></div>';
-                return;
-            }
-
-            data.messages.forEach(m => {
-                const div = document.createElement("div");
-                div.className = "message";
-                div.innerHTML = `
-                    <span class="msg-name">${escapeHtml(m.name)}</span>
-                    <div class="msg-text">${escapeHtml(m.text)}</div>
-                `;
-                chatBox.appendChild(div);
-            });
-            chatBox.scrollTop = chatBox.scrollHeight;
-        } catch (e) {
-            console.error("Fetch error:", e);
-        }
-    }
-
-    function escapeHtml(str) {
-        if(!str) return "";
-        return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
-    }
-</script>
-
-</body>
-</html>
+        .message {
