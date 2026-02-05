@@ -50,7 +50,6 @@
         .forum-form.active { display: block; }
         input, textarea { width: 100%; padding: 12px; margin-bottom: 15px; border-radius: 6px; border: 1px solid #444; background: #222; color: #fff; box-sizing: border-box; }
         .btn-main { background: var(--accent-color); color: #000; padding: 10px 25px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; transition: 0.3s; }
-        .btn-main:hover { transform: scale(1.05); }
     </style>
 </head>
 <body>
@@ -60,7 +59,7 @@
         <option value="">Language</option>
         <option value="ja">日本語</option>
         <option value="en">English</option>
-        <option value="ko">한국어</option>
+        <option value="ko">韓国語</option>
         <option value="zh-CN">简体中文</option>
         <option value="vi">Tiếng Việt</option>
     </select>
@@ -95,28 +94,25 @@
         <button class="btn-main notranslate" onclick="submitPost()">Submit</button>
     </div>
 
-    <div id="forumList">読み込み中...</div>
+    <div id="forumList">データを読み込み中...</div>
 </div>
 
 <script>
-    // GASのURL
-    const APP_URL = "https://script.google.com/a/macros/apps.naniwa.ed.jp/s/AKfycbyg_np9sFOCSETEeWyN0_p-RgZLwukKWnMuySo_LHkQl9hAtYE6Z3IjXOKle4qyhv-m1w/exec";
+    // ✅ URLを更新しました
+    const APP_URL = "https://script.google.com/macros/s/AKfycbzElLvxHvIg36hX_K6FY4jtV3dcC1Ie_snQi092G8ITSYrwf_Khvciiiap-Glh9HfZnTg/exec";
 
-    // 投稿を読み込む
     async function loadPosts() {
         try {
             const response = await fetch(APP_URL);
             const posts = await response.json();
             const list = document.getElementById('forumList');
+            list.innerHTML = '';
             
             if (!posts || posts.length === 0) {
-                list.innerText = "まだ投稿がありません。";
+                list.innerHTML = "<p style='text-align:center;'>まだ投稿がありません。</p>";
                 return;
             }
 
-            list.innerHTML = '';
-            
-            // スプレッドシートのデータを逆順（新しい順）に表示
             posts.reverse().forEach(p => {
                 const date = new Date(p[0]).toLocaleString('ja-JP');
                 list.innerHTML += `
@@ -131,11 +127,10 @@
                 `;
             });
         } catch (e) {
-            document.getElementById('forumList').innerText = "データの取得に失敗しました。";
+            document.getElementById('forumList').innerText = "データの取得に失敗しました。GASの設定を確認してください。";
         }
     }
 
-    // 投稿を送信する
     async function submitPost() {
         const btn = document.querySelector("#postForm .btn-main");
         const user = document.getElementById('userName').value || "Guest";
@@ -162,23 +157,15 @@
             alert("送信完了！");
             location.reload(); 
         } catch (e) {
-            alert("送信中にエラーが発生しました。");
+            alert("エラーが発生しました。");
             btn.innerText = "Submit";
             btn.disabled = false;
         }
     }
 
-    // UI制御
-    function toggleForm() { 
-        document.getElementById('postForm').classList.toggle('active'); 
-    }
-    
-    function toggleMenu() { 
-        document.getElementById("side-menu").classList.toggle("open"); 
-        document.getElementById("menu-overlay").classList.toggle("open"); 
-    }
+    function toggleForm() { document.getElementById('postForm').classList.toggle('active'); }
+    function toggleMenu() { document.getElementById("side-menu").classList.toggle("open"); document.getElementById("menu-overlay").classList.toggle("open"); }
 
-    // 言語引き継ぎ
     function googleTranslateElementInit() {
         new google.translate.TranslateElement({pageLanguage: 'ja', includedLanguages: 'ja,en,ko,zh-CN,vi', autoDisplay: false}, 'google_translate_element');
         setTimeout(() => {
@@ -193,11 +180,7 @@
             }
         }, 1000);
     }
-    
-    function translatePage(lang) { 
-        localStorage.setItem('selectedLang', lang); 
-        location.reload(); 
-    }
+    function translatePage(lang) { localStorage.setItem('selectedLang', lang); location.reload(); }
 
     window.onload = loadPosts;
 </script>
