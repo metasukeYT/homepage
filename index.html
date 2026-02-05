@@ -23,33 +23,48 @@
             color: var(--text-color);
             margin: 0;
             line-height: 1.6;
-            top: 0 !important; /* Google翻訳のバー対策 */
+            top: 0 !important; /* Google翻訳の変な余白を強制削除 */
         }
 
-        /* --- 言語切り替え（Google自動翻訳） --- */
+        /* --- 言語切り替えボタン（自作スタイル） --- */
         .lang-switcher {
             position: fixed;
             top: 20px;
             right: 20px;
             z-index: 1100;
-            background: rgba(26, 26, 26, 0.7);
-            padding: 5px 10px;
-            border-radius: 8px;
+            display: flex;
+            gap: 8px;
+        }
+
+        .lang-switcher button {
+            background: rgba(26, 26, 26, 0.6);
+            color: var(--accent-color);
             border: 1px solid var(--accent-color);
+            padding: 6px 14px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: 0.3s;
             backdrop-filter: blur(5px);
         }
 
-        /* Google翻訳のデザインをサイトに馴染ませる */
-        .goog-te-gadget-simple {
+        .lang-switcher button:hover {
+            background: var(--accent-color);
+            color: #000;
+        }
+
+        /* Google翻訳の「キモい」要素をすべて非表示 */
+        #google_translate_element, 
+        .skiptranslate, 
+        .goog-te-banner-frame, 
+        #goog-gt-tt, 
+        .goog-te-balloon-frame {
+            display: none !important;
+        }
+        font {
             background-color: transparent !important;
-            border: none !important;
-            font-size: 14px !important;
+            box-shadow: none !important;
         }
-        .goog-te-gadget-simple span {
-            color: var(--accent-color) !important;
-        }
-        .goog-te-banner-frame.skiptranslate { display: none !important; }
-        .goog-te-gadget-icon { display: none !important; }
 
         /* --- サイドメニューのCSS --- */
         #menu-toggle {
@@ -92,7 +107,6 @@
             font-size: 1.2rem;
             border-bottom: 1px solid #333;
         }
-
         #menu-overlay {
             display: none;
             position: fixed;
@@ -108,7 +122,6 @@
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            background: transparent; 
             text-align: center;
         }
         header h1 {
@@ -133,7 +146,7 @@
             box-shadow: 0 10px 30px rgba(0,0,0,0.5);
             backdrop-filter: blur(5px);
         }
-        h1, h2 { color: var(--accent-color); }
+        h2 { color: var(--accent-color); }
         .server-status {
             display: inline-block;
             background: #27ae60;
@@ -159,8 +172,11 @@
 <body>
 
 <div class="lang-switcher">
-    <div id="google_translate_element"></div>
+    <button onclick="translatePage('ja')">JP</button>
+    <button onclick="translatePage('en')">EN</button>
 </div>
+
+<div id="google_translate_element"></div>
 
 <div id="menu-toggle" onclick="toggleMenu()">
     <span></span>
@@ -226,8 +242,17 @@
 function googleTranslateElementInit() {
     new google.translate.TranslateElement({
         pageLanguage: 'ja',
-        layout: google.translate.TranslateElement.InlineLayout.SIMPLE
+        includedLanguages: 'ja,en', // 日本語と英語だけに制限
+        autoDisplay: false
     }, 'google_translate_element');
+}
+
+function translatePage(lang) {
+    const googleSelect = document.querySelector('#google_translate_element select');
+    if (googleSelect) {
+        googleSelect.value = lang;
+        googleSelect.dispatchEvent(new Event('change'));
+    }
 }
 </script>
 <script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
