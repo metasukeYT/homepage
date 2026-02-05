@@ -8,16 +8,16 @@
     <link rel="icon" href="favicon.jpg" type="image/jpeg">
     <style>
         :root {
-            --main-bg: #ffffffb5;
-            --card-bg: rgba(26, 26, 26, 0.9);
+            --main-bg: rgba(0, 0, 0, 0.4);
+            --card-bg: rgba(26, 26, 26, 0.85);
             --accent-color: #00d2ff; 
             --text-color: #ffffff;
             --error-color: #ff4d4d;
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-image: url('background.jpg');
+            font-family: 'Helvetica Neue', Arial, 'Hiragino Kaku Gothic ProN', 'Hiragino Sans', Meiryo, sans-serif;
+            background-image: url('background.jpg'); /* ここを背景画像に合わせる */
             background-size: cover;
             background-position: center;
             background-attachment: fixed;
@@ -37,82 +37,119 @@
         #menu-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 1000; }
         #menu-overlay.open { display: block; }
 
-        /* チャット専用スタイル */
+        /* --- ヒーローセクション（画像のデザインに合わせる） --- */
+        .hero-section {
+            height: 40vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background: linear-gradient(rgba(0,0,0,0.2), rgba(0,0,0,0.5));
+            text-align: center;
+            text-shadow: 0 0 15px rgba(0, 210, 255, 0.7);
+        }
+
+        .hero-section h1 {
+            font-size: 3rem;
+            color: var(--accent-color);
+            margin: 0;
+            letter-spacing: 4px;
+            font-weight: bold;
+        }
+
+        /* --- チャットエリアのスタイル --- */
         .chat-container {
             max-width: 900px;
-            margin: 100px auto 50px;
+            margin: -50px auto 50px; /* ヒーローセクションに少し被せる */
             padding: 0 20px;
+            position: relative;
+            z-index: 10;
         }
 
         .chat-box {
             background: var(--card-bg);
             padding: 20px;
-            border-radius: 15px;
-            height: 400px;
+            border-radius: 15px 15px 0 0;
+            height: 450px;
             overflow-y: auto;
-            border: 1px solid #444;
-            margin-bottom: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-bottom: none;
             display: flex;
             flex-direction: column;
-            backdrop-filter: blur(5px);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 -10px 30px rgba(0,0,0,0.5);
         }
 
+        /* メッセージの見た目 */
         .message {
-            margin-bottom: 15px;
-            padding: 10px;
-            border-radius: 8px;
-            background: rgba(255, 255, 255, 0.1);
+            margin-bottom: 12px;
+            padding: 12px 15px;
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.05);
+            border-left: 3px solid var(--accent-color);
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(5px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
         .message-user {
             color: var(--accent-color);
             font-weight: bold;
-            font-size: 0.9rem;
+            margin-right: 10px;
         }
 
+        /* 入力エリア */
         .input-area {
-            background: var(--card-bg);
-            padding: 20px;
-            border-radius: 15px;
+            background: #222;
+            padding: 25px;
+            border-radius: 0 0 15px 15px;
             display: flex;
             flex-direction: column;
-            gap: 10px;
+            gap: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
         }
 
         input[type="text"] {
-            background: rgba(0, 0, 0, 0.5);
-            border: 1px solid var(--accent-color);
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid #444;
             color: white;
-            padding: 12px;
-            border-radius: 5px;
+            padding: 15px;
+            border-radius: 8px;
             outline: none;
+            transition: 0.3s;
         }
 
-        input:read-only {
-            opacity: 0.6;
-            cursor: not-allowed;
-            border-color: #555;
+        input[type="text"]:focus {
+            border-color: var(--accent-color);
+            background: rgba(0, 0, 0, 0.5);
         }
 
         .btn-send {
             background: var(--accent-color);
-            color: black;
+            color: #000;
             border: none;
-            padding: 12px;
-            border-radius: 5px;
+            padding: 15px;
+            border-radius: 8px;
             font-weight: bold;
+            font-size: 1rem;
             cursor: pointer;
             transition: 0.3s;
+            text-transform: uppercase;
         }
 
         .btn-send:hover {
-            background: #00b8e6;
+            background: #fff;
+            box-shadow: 0 0 20px var(--accent-color);
             transform: translateY(-2px);
         }
 
         .status-msg {
-            font-size: 0.8rem;
-            margin-top: 5px;
+            font-size: 0.85rem;
+            min-height: 1.2em;
             text-align: center;
         }
     </style>
@@ -136,28 +173,29 @@
 </div>
 <div id="menu-overlay" onclick="toggleMenu()"></div>
 
+<header class="hero-section">
+    <h1>COMMUNITY CHAT</h1>
+    <p style="color: rgba(255,255,255,0.7);">めたすけのコミュニティへようこそ</p>
+</header>
+
 <div class="chat-container">
-    <h2 style="text-align: center; color: var(--accent-color);">COMMUNITY CHAT</h2>
-    
     <div class="chat-box" id="chatBox">
-        <div class="message">
-            <span class="message-user">System:</span>
-            <span>接続中...</span>
         </div>
-    </div>
 
     <div class="input-area">
-        <input type="text" id="userName" placeholder="名前 (一度送信すると変更できません)" maxlength="15" />
-        <input type="text" id="userMsg" placeholder="メッセージを入力..." maxlength="200" />
-        <button class="btn-send" id="sendBtn" onclick="sendMessage()">送信</button>
+        <div style="display: flex; gap: 10px;">
+            <input type="text" id="userName" placeholder="名前" maxlength="15" style="flex: 1;" />
+            <input type="text" id="userMsg" placeholder="メッセージを入力..." maxlength="200" style="flex: 3;" />
+        </div>
+        <button class="btn-send" id="sendBtn" onclick="sendMessage()">メッセージを送信</button>
         <div id="statusLabel" class="status-msg"></div>
     </div>
 </div>
 
 <script>
+    // --- 既存のJavaScript処理（GAS_URLなどはそのまま使用） ---
     const GAS_URL = "https://script.google.com/macros/s/AKfycbxJhd0Y5CemLGBnoJoWVYEpN7G2gmX3yYX0LJbSkVVgtJl3MRN3LIw6YgDBA3aqHV8Sog/exec";
 
-    // ページ読み込み時に保存された名前を取得
     window.onload = () => {
         const savedName = localStorage.getItem("chat_user_name");
         if (savedName) {
@@ -167,7 +205,7 @@
             nameInput.style.opacity = "0.6";
         }
         fetchMessages();
-        setInterval(fetchMessages, 5000); // 5秒ごとに自動更新
+        setInterval(fetchMessages, 5000);
     };
 
     function toggleMenu() {
@@ -202,18 +240,15 @@
             const result = await response.json();
 
             if (result.success) {
-                // 名前をブラウザに保存してロック
                 localStorage.setItem("chat_user_name", name);
                 nameInput.readOnly = true;
                 nameInput.style.opacity = "0.6";
-                
                 msgInput.value = "";
                 status.innerText = "送信完了！";
                 status.style.color = "#2ecc71";
                 fetchMessages();
             } else {
-                // 偽造防止（名前重複など）のメッセージを表示
-                status.innerText = result.error || "その名前は既に使用されています。";
+                status.innerText = result.error || "エラーが発生しました。";
                 status.style.color = "var(--error-color)";
             }
         } catch (e) {
