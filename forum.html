@@ -5,78 +5,115 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Forum ｜ METASUKE</title>
     <style>
-        :root {
-            --accent: #00d2ff;
-            --bg: #1a1a1a;
-            --card: #262626;
-        }
-
+        /* 基本設定 */
         body {
-            background-color: var(--bg);
-            color: white;
-            font-family: 'Helvetica Neue', Arial, sans-serif;
+            background-color: #121212;
+            color: #e0e0e0;
+            font-family: "Helvetica Neue", Arial, "Hiragino Kaku Gothic ProN", "Hiragino Sans", Meiryo, sans-serif;
             margin: 0;
-            padding: 20px;
+            padding: 0;
+            line-height: 1.6;
         }
 
-        .container { max-width: 800px; margin: 0 auto; }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
 
-        /* 入力エリアのデザイン */
-        .post-form {
-            background: var(--card);
-            padding: 20px;
-            border-radius: 15px;
+        h1 {
+            text-align: center;
+            color: #00d2ff;
+            font-size: 2.5rem;
             margin-bottom: 40px;
-            border: 1px solid #333;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            text-shadow: 0 0 10px rgba(0, 210, 255, 0.3);
         }
 
-        input, textarea {
+        /* 投稿フォームのスタイル */
+        .post-form {
+            background: #1e1e1e;
+            padding: 25px;
+            border-radius: 16px;
+            margin-bottom: 50px;
+            border: 1px solid #333;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+        }
+
+        input[type="text"],
+        textarea {
             width: 100%;
-            padding: 12px;
-            margin-bottom: 10px;
-            background: #111;
+            padding: 12px 15px;
+            margin-bottom: 15px;
+            background: #2a2a2a;
             color: white;
             border: 1px solid #444;
             border-radius: 8px;
-            box-sizing: border-box;
-            outline: none;
+            box-sizing: border-box; /* 幅の計算を正しくする */
+            font-size: 1rem;
         }
 
-        input:focus, textarea:focus { border-color: var(--accent); }
+        input:focus, textarea:focus {
+            border-color: #00d2ff;
+            outline: none;
+            background: #333;
+        }
 
         button {
             width: 100%;
             padding: 15px;
-            background: var(--accent);
-            color: black;
+            background: linear-gradient(135deg, #00d2ff 0%, #00a1ff 100%);
+            color: #000;
             border: none;
             border-radius: 8px;
             font-weight: bold;
-            font-size: 1rem;
+            font-size: 1.1rem;
             cursor: pointer;
-            transition: 0.3s;
+            transition: transform 0.2s, box-shadow 0.2s;
         }
 
-        button:hover { background: #009dbf; transform: translateY(-2px); }
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 210, 255, 0.4);
+        }
 
-        /* 投稿カードのデザイン */
+        /* 掲示板カードのスタイル */
         .forum-card {
-            background: var(--card);
+            background: #252525;
             padding: 20px;
             border-radius: 12px;
             margin-bottom: 20px;
-            border-left: 5px solid var(--accent);
-            animation: fadeIn 0.5s ease;
+            border-left: 5px solid #00d2ff;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
         }
 
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .meta {
+            color: #00d2ff;
+            font-size: 0.85rem;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+        }
 
-        .meta { color: var(--accent); font-size: 0.85rem; margin-bottom: 8px; }
-        h3 { margin: 0 0 10px 0; font-size: 1.4rem; }
-        p { margin: 0; color: #ccc; line-height: 1.6; }
+        .post-title {
+            margin: 0 0 10px 0;
+            font-size: 1.3rem;
+            color: #fff;
+        }
 
-        hr { border: 0.5px solid #333; margin: 40px 0; }
+        .post-content {
+            margin: 0;
+            color: #bbb;
+            white-space: pre-wrap; /* 改行を反映させる */
+        }
+
+        #forumList {
+            margin-top: 20px;
+        }
+
+        .loading {
+            text-align: center;
+            color: #888;
+        }
     </style>
 </head>
 <body>
@@ -85,76 +122,16 @@
     <h1>Community Forum</h1>
 
     <div class="post-form">
-        <input type="text" id="userName" placeholder="名前 (Nickname)">
-        <input type="text" id="postTitle" placeholder="タイトル">
-        <textarea id="postContent" placeholder="メッセージを入力してください..." rows="5"></textarea>
-        <button onclick="submitPost()">掲示板に書き込む</button>
+        <input type="text" id="userName" placeholder="名前">
+        <input type="text" id="postTitle" placeholder="タイトル（件名）">
+        <textarea id="postContent" placeholder="メッセージを入力してください..." rows="4"></textarea>
+        <button onclick="submitPost()">掲示板に投稿する</button>
     </div>
 
-    <div id="forumList">読み込み中...</div>
+    <div id="forumList">
+        <p class="loading">投稿を読み込んでいます...</p>
+    </div>
 </div>
 
 <script>
-    const APP_URL = "https://script.google.com/macros/s/AKfycbzElLvxHvIg36hX_K6FY4jtV3dcC1Ie_snQi092G8ITSYrwf_Khvciiiap-Glh9HfZnTg/exec";
-
-    // 1. スプレッドシートから投稿を読み込む
-    async function loadPosts() {
-        try {
-            const res = await fetch(APP_URL);
-            const posts = await res.json();
-            const list = document.getElementById('forumList');
-            
-            if (!posts || posts.length === 0) {
-                list.innerHTML = "まだ投稿がありません。";
-                return;
-            }
-
-            list.innerHTML = '';
-            // 新しい順（逆順）に表示
-            posts.reverse().forEach(p => {
-                const date = new Date(p[0]).toLocaleString();
-                list.innerHTML += `
-                    <div class="forum-card">
-                        <div class="meta">${date} ｜ ${p[1]}</div>
-                        <h3>${p[2]}</h3>
-                        <p>${p[3]}</p>
-                    </div>`;
-            });
-        } catch (e) {
-            document.getElementById('forumList').innerText = "データの取得に失敗しました。";
-        }
-    }
-
-    // 2. 投稿を送信する
-    async function submitPost() {
-        const user = document.getElementById('userName').value || "名無しさん";
-        const title = document.getElementById('postTitle').value || "無題";
-        const content = document.getElementById('postContent').value;
-
-        if (!content) return alert("内容を入力してください！");
-
-        const data = { user, title, content };
-
-        // 送信（no-corsでエラーを回避）
-        await fetch(APP_URL, {
-            method: "POST",
-            mode: "no-cors",
-            body: JSON.stringify(data)
-        });
-
-        // フォームをクリア
-        document.getElementById('userName').value = "";
-        document.getElementById('postTitle').value = "";
-        document.getElementById('postContent').value = "";
-
-        alert("送信しました！");
-        
-        // 反映を待ってから再読み込み
-        setTimeout(loadPosts, 1500);
-    }
-
-    window.onload = loadPosts;
-</script>
-
-</body>
-</html>
+    const APP_URL = "
