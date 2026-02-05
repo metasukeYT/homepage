@@ -4,186 +4,157 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Forum ｜ METASUKE</title>
-    <link rel="icon" href="favicon.jpg" type="image/jpeg">
     <style>
         :root {
-            --main-bg: #ffffffb5;
-            --card-bg: rgba(26, 26, 26, 0.9);
-            --accent-color: #00d2ff; 
-            --text-color: #ffffff;
+            --accent: #00d2ff;
+            --bg: #1a1a1a;
+            --card: #262626;
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-image: url('background.jpg');
-            background-size: cover; background-position: center; background-attachment: fixed;
-            color: var(--text-color); margin: 0; line-height: 1.6; top: 0 !important;
+            background-color: var(--bg);
+            color: white;
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
         }
 
-        /* --- UI Elements --- */
-        .lang-switcher { position: fixed; top: 20px; right: 20px; z-index: 1100; }
-        .lang-switcher select { background: rgba(26, 26, 26, 0.7); color: var(--accent-color); border: 1px solid var(--accent-color); padding: 8px 12px; border-radius: 6px; cursor: pointer; font-weight: bold; backdrop-filter: blur(5px); outline: none; }
-        #google_translate_element, .skiptranslate, .goog-te-banner-frame { display: none !important; }
+        .container { max-width: 800px; margin: 0 auto; }
 
-        #menu-toggle { position: fixed; top: 20px; left: 20px; cursor: pointer; z-index: 1002; padding: 10px; }
-        #menu-toggle span { display: block; width: 30px; height: 4px; background-color: white; margin-bottom: 5px; border-radius: 2px; }
-        #side-menu { position: fixed; top: 0; left: -280px; width: 280px; height: 100%; background-color: #1a1a1a; transition: 0.4s ease; z-index: 1001; padding-top: 60px; box-shadow: 2px 0 10px rgba(0,0,0,0.5); }
-        #side-menu.open { left: 0; }
-        #side-menu ul { list-style: none; padding: 0; }
-        #side-menu ul li a { display: block; padding: 15px 25px; color: var(--accent-color); text-decoration: none; font-size: 1.2rem; border-bottom: 1px solid #333; }
-        #menu-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 1000; }
-        #menu-overlay.open { display: block; }
-
-        header { height: 30vh; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; }
-        header h1 { font-size: 3.5rem; margin: 0; color: var(--accent-color); text-shadow: 2px 2px 10px rgba(0, 0, 0, 0.8); }
-
-        .container { max-width: 900px; margin: 0 auto 50px; padding: 0 20px; position: relative; z-index: 1; }
-
-        /* --- Forum Cards --- */
-        .forum-card { 
-            background: var(--card-bg); 
-            padding: 25px; 
-            border-radius: 15px; 
-            margin-bottom: 20px; 
-            border-left: 4px solid var(--accent-color); 
-            transition: 0.3s; 
-            cursor: pointer; /* クリック可能であることを示す */
+        /* 入力エリアのデザイン */
+        .post-form {
+            background: var(--card);
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 40px;
+            border: 1px solid #333;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
         }
-        .forum-card:hover { background: rgba(40, 40, 40, 0.95); transform: translateY(-3px); }
-        .meta { font-size: 0.8rem; color: #bbb; margin-bottom: 10px; }
-        .tag { background: #333; padding: 2px 8px; border-radius: 4px; color: var(--accent-color); margin-right: 10px; }
-        .view-chat { text-align: right; color: var(--accent-color); font-size: 0.9rem; font-weight: bold; margin-top: 10px; }
 
-        .forum-form { background: var(--card-bg); padding: 25px; border-radius: 15px; margin-bottom: 40px; display: none; border: 1px solid var(--accent-color); }
-        .forum-form.active { display: block; }
-        input, textarea { width: 100%; padding: 12px; margin-bottom: 15px; border-radius: 6px; border: 1px solid #444; background: #222; color: #fff; box-sizing: border-box; }
-        .btn-main { background: var(--accent-color); color: #000; padding: 10px 25px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; transition: 0.3s; }
+        input, textarea {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 10px;
+            background: #111;
+            color: white;
+            border: 1px solid #444;
+            border-radius: 8px;
+            box-sizing: border-box;
+            outline: none;
+        }
+
+        input:focus, textarea:focus { border-color: var(--accent); }
+
+        button {
+            width: 100%;
+            padding: 15px;
+            background: var(--accent);
+            color: black;
+            border: none;
+            border-radius: 8px;
+            font-weight: bold;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        button:hover { background: #009dbf; transform: translateY(-2px); }
+
+        /* 投稿カードのデザイン */
+        .forum-card {
+            background: var(--card);
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            border-left: 5px solid var(--accent);
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        .meta { color: var(--accent); font-size: 0.85rem; margin-bottom: 8px; }
+        h3 { margin: 0 0 10px 0; font-size: 1.4rem; }
+        p { margin: 0; color: #ccc; line-height: 1.6; }
+
+        hr { border: 0.5px solid #333; margin: 40px 0; }
     </style>
 </head>
 <body>
 
-<div class="lang-switcher">
-    <select id="langSelect" onchange="translatePage(this.value)" class="notranslate">
-        <option value="">Language</option>
-        <option value="ja">日本語</option>
-        <option value="en">English</option>
-        <option value="ko">한국어</option>
-        <option value="zh-CN">简体中文</option>
-        <option value="vi">Tiếng Việt</option>
-    </select>
-</div>
-<div id="google_translate_element"></div>
-
-<div id="menu-toggle" onclick="toggleMenu()"><span></span><span></span><span></span></div>
-<div id="side-menu">
-    <nav><ul>
-        <li><a href="index.html">Home</a></li>
-        <li><a href="store.html">Store</a></li>
-        <li><a href="forum.html">Forum</a></li>
-        <li><a href="plugin.html">Plugin配布</a></li>
-    </ul></nav>
-</div>
-<div id="menu-overlay" onclick="toggleMenu()"></div>
-
-<header>
-    <h1>Community Forum</h1>
-    <p>投稿をクリックしてチャットに参加</p>
-</header>
-
 <div class="container">
-    <div class="post-trigger" style="text-align:center; margin-bottom:30px;">
-        <button class="btn-main notranslate" onclick="toggleForm()">+ Create New Post</button>
-    </div>
+    <h1>Community Forum</h1>
 
-    <div id="postForm" class="forum-form">
-        <input type="text" placeholder="名前 (Name)" id="userName">
-        <input type="text" placeholder="タイトル (Title)" id="postTitle">
-        <textarea placeholder="内容 (Content)" id="postContent"></textarea>
-        <button class="btn-main notranslate" onclick="submitPost()">Submit</button>
+    <div class="post-form">
+        <input type="text" id="userName" placeholder="名前 (Nickname)">
+        <input type="text" id="postTitle" placeholder="タイトル">
+        <textarea id="postContent" placeholder="メッセージを入力してください..." rows="5"></textarea>
+        <button onclick="submitPost()">掲示板に書き込む</button>
     </div>
 
     <div id="forumList">読み込み中...</div>
 </div>
 
 <script>
-    // 最新のGAS URL
-    const APP_URL = "https://script.google.com/macros/s/AKfycbxTgzjIgCRKE9EtQf8af9yjMso2T9ipQwJ1z6rkNSTwXjqNSK80G3SzVtB0OsJ8O7omow/exec";
+    const APP_URL = "https://script.google.com/macros/s/AKfycbzElLvxHvIg36hX_K6FY4jtV3dcC1Ie_snQi092G8ITSYrwf_Khvciiiap-Glh9HfZnTg/exec";
 
+    // 1. スプレッドシートから投稿を読み込む
     async function loadPosts() {
         try {
-            const response = await fetch(APP_URL);
-            const data = await response.json();
+            const res = await fetch(APP_URL);
+            const posts = await res.json();
             const list = document.getElementById('forumList');
-            list.innerHTML = '';
             
-            // data.posts が存在するか確認 (GASの戻り値の形式に合わせる)
-            const posts = data.posts || data; 
+            if (!posts || posts.length === 0) {
+                list.innerHTML = "まだ投稿がありません。";
+                return;
+            }
 
-            // スプレッドシートのデータを逆順（新しい順）に表示
-            posts.slice().reverse().forEach((p, index) => {
-                const originalIndex = posts.length - 1 - index;
+            list.innerHTML = '';
+            // 新しい順（逆順）に表示
+            posts.reverse().forEach(p => {
                 const date = new Date(p[0]).toLocaleString();
-                
                 list.innerHTML += `
-                    <div class="forum-card" onclick="location.href='chat.html?id=${originalIndex}'">
-                        <div class="meta"><span class="tag">Post</span><span>${p[1]}</span> • <span>${date}</span></div>
+                    <div class="forum-card">
+                        <div class="meta">${date} ｜ ${p[1]}</div>
                         <h3>${p[2]}</h3>
                         <p>${p[3]}</p>
-                        <div class="view-chat">チャットを見る ＞</div>
-                    </div>
-                `;
+                    </div>`;
             });
         } catch (e) {
-            document.getElementById('forumList').innerText = "投稿が読み込めませんでした。";
+            document.getElementById('forumList').innerText = "データの取得に失敗しました。";
         }
     }
 
+    // 2. 投稿を送信する
     async function submitPost() {
-        const btn = document.querySelector("#postForm .btn-main");
-        const user = document.getElementById('userName').value || "Guest";
-        const title = document.getElementById('postTitle').value;
+        const user = document.getElementById('userName').value || "名無しさん";
+        const title = document.getElementById('postTitle').value || "無題";
         const content = document.getElementById('postContent').value;
 
-        if(!title || !content) return alert("タイトルと内容を入力してください");
+        if (!content) return alert("内容を入力してください！");
 
-        btn.innerText = "Sending...";
-        btn.disabled = true;
+        const data = { user, title, content };
 
-        const data = {
-            type: "post", // GAS側で判別するために追加
-            user: user,
-            title: title,
-            content: content
-        };
-
+        // 送信（no-corsでエラーを回避）
         await fetch(APP_URL, {
             method: "POST",
             mode: "no-cors",
             body: JSON.stringify(data)
         });
 
-        alert("送信完了！");
-        location.reload(); 
-    }
+        // フォームをクリア
+        document.getElementById('userName').value = "";
+        document.getElementById('postTitle').value = "";
+        document.getElementById('postContent').value = "";
 
-    function toggleForm() { document.getElementById('postForm').classList.toggle('active'); }
-    function toggleMenu() { document.getElementById("side-menu").classList.toggle("open"); document.getElementById("menu-overlay").classList.toggle("open"); }
-
-    function googleTranslateElementInit() {
-        new google.translate.TranslateElement({pageLanguage: 'ja', includedLanguages: 'ja,en,ko,zh-CN,vi', autoDisplay: false}, 'google_translate_element');
-        setTimeout(() => {
-            const savedLang = localStorage.getItem('selectedLang');
-            if (savedLang) {
-                const googleSelect = document.querySelector('#google_translate_element select');
-                if (googleSelect) { googleSelect.value = savedLang; googleSelect.dispatchEvent(new Event('change')); document.getElementById('langSelect').value = savedLang; }
-            }
-        }, 1000);
+        alert("送信しました！");
+        
+        // 反映を待ってから再読み込み
+        setTimeout(loadPosts, 1500);
     }
-    function translatePage(lang) { localStorage.setItem('selectedLang', lang); location.reload(); }
 
     window.onload = loadPosts;
 </script>
-<script src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
 
 </body>
 </html>
