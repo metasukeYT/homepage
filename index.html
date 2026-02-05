@@ -26,7 +26,7 @@
             top: 0 !important;
         }
 
-        /* --- 言語切り替えセレクトボックス（新スタイル） --- */
+        /* --- 言語切り替えセレクトボックス（翻訳除外設定） --- */
         .lang-switcher {
             position: fixed;
             top: 20px;
@@ -53,12 +53,13 @@
             color: #000;
         }
 
+        /* 選択肢の背景 */
         .lang-switcher option {
             background: #1a1a1a;
             color: #fff;
         }
 
-        /* Google翻訳の要素を非表示 */
+        /* Google翻訳のUIを隠す設定 */
         #google_translate_element, 
         .skiptranslate, 
         .goog-te-banner-frame, 
@@ -177,7 +178,7 @@
 <body>
 
 <div class="lang-switcher">
-    <select onchange="translatePage(this.value)">
+    <select onchange="translatePage(this.value)" class="notranslate">
         <option value="">Language</option>
         <option value="ja">日本語</option>
         <option value="en">English</option>
@@ -253,7 +254,6 @@
 function googleTranslateElementInit() {
     new google.translate.TranslateElement({
         pageLanguage: 'ja',
-        // 許可する言語コードを追加
         includedLanguages: 'ja,en,ko,zh-CN,vi', 
         autoDisplay: false
     }, 'google_translate_element');
