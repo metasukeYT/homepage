@@ -40,10 +40,19 @@
         .container { max-width: 900px; margin: 0 auto 50px; padding: 0 20px; position: relative; z-index: 1; }
 
         /* --- Forum Cards --- */
-        .forum-card { background: var(--card-bg); padding: 25px; border-radius: 15px; margin-bottom: 20px; border-left: 4px solid var(--accent-color); transition: 0.3s; }
-        .forum-card:hover { background: rgba(40, 40, 40, 0.95); }
+        .forum-card { 
+            background: var(--card-bg); 
+            padding: 25px; 
+            border-radius: 15px; 
+            margin-bottom: 20px; 
+            border-left: 4px solid var(--accent-color); 
+            transition: 0.3s; 
+            cursor: pointer; /* クリック可能であることを示す */
+        }
+        .forum-card:hover { background: rgba(40, 40, 40, 0.95); transform: translateY(-3px); }
         .meta { font-size: 0.8rem; color: #bbb; margin-bottom: 10px; }
         .tag { background: #333; padding: 2px 8px; border-radius: 4px; color: var(--accent-color); margin-right: 10px; }
+        .view-chat { text-align: right; color: var(--accent-color); font-size: 0.9rem; font-weight: bold; margin-top: 10px; }
 
         .forum-form { background: var(--card-bg); padding: 25px; border-radius: 15px; margin-bottom: 40px; display: none; border: 1px solid var(--accent-color); }
         .forum-form.active { display: block; }
@@ -78,7 +87,7 @@
 
 <header>
     <h1>Community Forum</h1>
-    <p>スプレッドシート連携・完全無料掲示板</p>
+    <p>投稿をクリックしてチャットに参加</p>
 </header>
 
 <div class="container">
@@ -97,60 +106,69 @@
 </div>
 
 <script>
-    // 先ほど作成したGASのURL
-    const APP_URL = "https://script.google.com/a/macros/apps.naniwa.ed.jp/s/AKfycbyg_np9sFOCSETEeWyN0_p-RgZLwukKWnMuySo_LHkQl9hAtYE6Z3IjXOKle4qyhv-m1w/exec";
+    // 最新のGAS URL
+    const APP_URL = "https://script.google.com/macros/s/AKfycbxTgzjIgCRKE9EtQf8af9yjMso2T9ipQwJ1z6rkNSTwXjqNSK80G3SzVtB0OsJ8O7omow/exec";
 
-    // 投稿を読み込む
     async function loadPosts() {
         try {
             const response = await fetch(APP_URL);
-            const posts = await response.json();
+            const data = await response.json();
             const list = document.getElementById('forumList');
             list.innerHTML = '';
             
+            // data.posts が存在するか確認 (GASの戻り値の形式に合わせる)
+            const posts = data.posts || data; 
+
             // スプレッドシートのデータを逆順（新しい順）に表示
-            posts.reverse().forEach(p => {
+            posts.slice().reverse().forEach((p, index) => {
+                const originalIndex = posts.length - 1 - index;
                 const date = new Date(p[0]).toLocaleString();
+                
                 list.innerHTML += `
-                    <div class="forum-card">
+                    <div class="forum-card" onclick="location.href='chat.html?id=${originalIndex}'">
                         <div class="meta"><span class="tag">Post</span><span>${p[1]}</span> • <span>${date}</span></div>
                         <h3>${p[2]}</h3>
                         <p>${p[3]}</p>
+                        <div class="view-chat">チャットを見る ＞</div>
                     </div>
                 `;
             });
         } catch (e) {
-            document.getElementById('forumList').innerText = "投稿がまだありません。";
+            document.getElementById('forumList').innerText = "投稿が読み込めませんでした。";
         }
     }
 
-    // 投稿を送信する
     async function submitPost() {
         const btn = document.querySelector("#postForm .btn-main");
+        const user = document.getElementById('userName').value || "Guest";
+        const title = document.getElementById('postTitle').value;
+        const content = document.getElementById('postContent').value;
+
+        if(!title || !content) return alert("タイトルと内容を入力してください");
+
         btn.innerText = "Sending...";
         btn.disabled = true;
 
         const data = {
-            user: document.getElementById('userName').value || "Guest",
-            title: document.getElementById('postTitle').value,
-            content: document.getElementById('postContent').value
+            type: "post", // GAS側で判別するために追加
+            user: user,
+            title: title,
+            content: content
         };
 
         await fetch(APP_URL, {
             method: "POST",
-            mode: "no-cors", // GASへのPOSTで必要
+            mode: "no-cors",
             body: JSON.stringify(data)
         });
 
-        alert("送信完了！反映まで数秒かかる場合があります。");
+        alert("送信完了！");
         location.reload(); 
     }
 
-    // UI制御
     function toggleForm() { document.getElementById('postForm').classList.toggle('active'); }
     function toggleMenu() { document.getElementById("side-menu").classList.toggle("open"); document.getElementById("menu-overlay").classList.toggle("open"); }
 
-    // 言語引き継ぎ
     function googleTranslateElementInit() {
         new google.translate.TranslateElement({pageLanguage: 'ja', includedLanguages: 'ja,en,ko,zh-CN,vi', autoDisplay: false}, 'google_translate_element');
         setTimeout(() => {
