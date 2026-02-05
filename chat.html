@@ -58,3 +58,199 @@
         }
 
         .message {
+            margin-bottom: 15px;
+            padding: 10px;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .message-user {
+            color: var(--accent-color);
+            font-weight: bold;
+            font-size: 0.9rem;
+        }
+
+        .input-area {
+            background: var(--card-bg);
+            padding: 20px;
+            border-radius: 15px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        input[type="text"] {
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px solid var(--accent-color);
+            color: white;
+            padding: 12px;
+            border-radius: 5px;
+            outline: none;
+        }
+
+        input:read-only {
+            opacity: 0.6;
+            cursor: not-allowed;
+            border-color: #555;
+        }
+
+        .btn-send {
+            background: var(--accent-color);
+            color: black;
+            border: none;
+            padding: 12px;
+            border-radius: 5px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .btn-send:hover {
+            background: #00b8e6;
+            transform: translateY(-2px);
+        }
+
+        .status-msg {
+            font-size: 0.8rem;
+            margin-top: 5px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+
+<div id="menu-toggle" onclick="toggleMenu()">
+    <span></span><span></span><span></span>
+</div>
+<div id="side-menu">
+    <nav>
+        <ul>
+            <li><a href="index.html">Home</a></li>
+            <li><a href="store.html">Store</a></li>
+            <li><a href="forum.html">Forum</a></li>
+            <li><a href="plugin.html">Plugin配布</a></li>
+            <li><a href="chat.html">Chat・Community</a></li>
+        </ul>
+    </nav>
+    <div class="close-btn" onclick="toggleMenu()">&times; Close</div>
+</div>
+<div id="menu-overlay" onclick="toggleMenu()"></div>
+
+<div class="chat-container">
+    <h2 style="text-align: center; color: var(--accent-color);">COMMUNITY CHAT</h2>
+    
+    <div class="chat-box" id="chatBox">
+        <div class="message">
+            <span class="message-user">System:</span>
+            <span>接続中...</span>
+        </div>
+    </div>
+
+    <div class="input-area">
+        <input type="text" id="userName" placeholder="名前 (一度送信すると変更できません)" maxlength="15" />
+        <input type="text" id="userMsg" placeholder="メッセージを入力..." maxlength="200" />
+        <button class="btn-send" id="sendBtn" onclick="sendMessage()">送信</button>
+        <div id="statusLabel" class="status-msg"></div>
+    </div>
+</div>
+
+<script>
+    const GAS_URL = "https://script.google.com/macros/s/AKfycbxJhd0Y5CemLGBnoJoWVYEpN7G2gmX3yYX0LJbSkVVgtJl3MRN3LIw6YgDBA3aqHV8Sog/exec";
+
+    // ページ読み込み時に保存された名前を取得
+    window.onload = () => {
+        const savedName = localStorage.getItem("chat_user_name");
+        if (savedName) {
+            const nameInput = document.getElementById("userName");
+            nameInput.value = savedName;
+            nameInput.readOnly = true;
+            nameInput.style.opacity = "0.6";
+        }
+        fetchMessages();
+        setInterval(fetchMessages, 5000); // 5秒ごとに自動更新
+    };
+
+    function toggleMenu() {
+        document.getElementById("side-menu").classList.toggle("open");
+        document.getElementById("menu-overlay").classList.toggle("open");
+    }
+
+    async function sendMessage() {
+        const nameInput = document.getElementById("userName");
+        const msgInput = document.getElementById("userMsg");
+        const status = document.getElementById("statusLabel");
+        const btn = document.getElementById("sendBtn");
+        
+        const name = nameInput.value.trim();
+        const message = msgInput.value.trim();
+
+        if (!name || !message) {
+            status.innerText = "名前とメッセージを入力してください";
+            status.style.color = "var(--error-color)";
+            return;
+        }
+
+        btn.disabled = true;
+        status.innerText = "送信中...";
+        status.style.color = "var(--accent-color)";
+
+        try {
+            const response = await fetch(GAS_URL, {
+                method: "POST",
+                body: JSON.stringify({ name: name, message: message })
+            });
+            const result = await response.json();
+
+            if (result.success) {
+                // 名前をブラウザに保存してロック
+                localStorage.setItem("chat_user_name", name);
+                nameInput.readOnly = true;
+                nameInput.style.opacity = "0.6";
+                
+                msgInput.value = "";
+                status.innerText = "送信完了！";
+                status.style.color = "#2ecc71";
+                fetchMessages();
+            } else {
+                // 偽造防止（名前重複など）のメッセージを表示
+                status.innerText = result.error || "その名前は既に使用されています。";
+                status.style.color = "var(--error-color)";
+            }
+        } catch (e) {
+            status.innerText = "エラーが発生しました。";
+            status.style.color = "var(--error-color)";
+        } finally {
+            btn.disabled = false;
+        }
+    }
+
+    async function fetchMessages() {
+        try {
+            const response = await fetch(GAS_URL);
+            const data = await response.json();
+            const chatBox = document.getElementById("chatBox");
+            
+            chatBox.innerHTML = '<div class="message"><span class="message-user">System:</span> <span>チャットへようこそ！公序良俗を守って楽しく会話しましょう。</span></div>';
+
+            if (data.messages && data.messages.length > 0) {
+                data.messages.forEach(m => {
+                    const div = document.createElement("div");
+                    div.className = "message";
+                    div.innerHTML = `<span class="message-user">${escapeHtml(m.name)}:</span> <span>${escapeHtml(m.text)}</span>`;
+                    chatBox.appendChild(div);
+                });
+            }
+            chatBox.scrollTop = chatBox.scrollHeight;
+        } catch (e) {
+            console.error("読み込みエラー", e);
+        }
+    }
+
+    function escapeHtml(str) {
+        if (!str) return "";
+        return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+    }
+</script>
+
+</body>
+</html>
