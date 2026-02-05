@@ -9,7 +9,7 @@
     <style>
         :root {
             --main-bg: #ffffffb5;
-            --card-bg: rgba(26, 26, 26, 0.9); /* カードも少し透かすとかっこいいです */
+            --card-bg: rgba(26, 26, 26, 0.9);
             --accent-color: #00d2ff; 
             --text-color: #ffffff;
         }
@@ -23,6 +23,33 @@
             color: var(--text-color);
             margin: 0;
             line-height: 1.6;
+        }
+
+        /* --- 言語切り替えボタン（右上固定） --- */
+        .lang-switcher {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1002;
+            display: flex;
+            gap: 8px;
+        }
+
+        .lang-switcher button {
+            background: rgba(26, 26, 26, 0.6);
+            color: var(--accent-color);
+            border: 1px solid var(--accent-color);
+            padding: 5px 12px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: 0.3s;
+            backdrop-filter: blur(5px);
+        }
+
+        .lang-switcher button:hover {
+            background: var(--accent-color);
+            color: #000;
         }
 
         /* --- サイドメニューのCSS --- */
@@ -42,7 +69,7 @@
             background-color: white;
             margin-bottom: 5px;
             border-radius: 2px;
-            box-shadow: 0 0 5px rgba(0,0,0,0.5); /* ボタンを見やすく */
+            box-shadow: 0 0 5px rgba(0,0,0,0.5);
         }
 
         #side-menu {
@@ -102,14 +129,13 @@
             display: block;
         }
 
-        /* --- ヘッダー（背景を透かす修正箇所） --- */
+        /* --- ヘッダー --- */
         header {
             height: 60vh;
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            /* 背景を透明にし、文字に影をつけて浮かび上がらせる */
             background: transparent; 
             text-align: center;
         }
@@ -118,7 +144,7 @@
             font-size: 4rem;
             margin: 0;
             color: var(--accent-color);
-            text-shadow: 2px 2px 10px rgba(0, 0, 0, 0.8); /* 文字の後ろを透かす分、影を強くしました */
+            text-shadow: 2px 2px 10px rgba(0, 0, 0, 0.8);
         }
 
         header p {
@@ -141,7 +167,7 @@
             border-radius: 15px;
             margin-bottom: 30px;
             box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-            backdrop-filter: blur(5px); /* 背景を少しぼかすとおしゃれになります */
+            backdrop-filter: blur(5px);
         }
 
         h1, h2 { color: var(--accent-color); }
@@ -175,6 +201,11 @@
 </head>
 <body>
 
+<div class="lang-switcher">
+    <button onclick="switchLang('ja')">JP</button>
+    <button onclick="switchLang('en')">EN</button>
+</div>
+
 <div id="menu-toggle" onclick="toggleMenu()">
     <span></span>
     <span></span>
@@ -196,15 +227,15 @@
 <div id="menu-overlay" onclick="toggleMenu()"></div>
 
     <header>
-        <h1>METASUKE</h1>
-        <p>めたすけのホームページ</p>
+        <h1 class="lang" data-ja="METASUKE" data-en="METASUKE">METASUKE</h1>
+        <p class="lang" data-ja="めたすけのホームページ" data-en="Metasuke's Homepage">めたすけのホームページ</p>
     </header>
 
     <div class="container">
         <section id="about">
-            <h2>About Me</h2>
-            <p>最近バイブコーディング始めました！</p>
-            <p>自分でもコード書きたい...</p>
+            <h2 class="lang" data-ja="About Me" data-en="About Me">About Me</h2>
+            <p class="lang" data-ja="最近バイブコーディング始めました！" data-en="I recently started vibe coding!">最近バイブコーディング始めました！</p>
+            <p class="lang" data-ja="自分でもコード書きたい..." data-en="I want to write code myself...">自分でもコード書きたい...</p>
             <div class="link-buttons">
                 <a href="https://www.youtube.com/@metasukech" target="_blank">Youtube Channel</a>
                 <a href="https://www.youtube.com/@metasuke-271" target="_blank">Sub Channel</a>
@@ -214,11 +245,11 @@
         </section>
 
         <section id="server">
-            <h2>Server Information</h2>
+            <h2 class="lang" data-ja="Server Information" data-en="Server Information">Server Information</h2>
             <div class="server-status">Online</div>
-            <p><strong>サーバー名：</strong> Razyn Network</p>
-            <p><strong>内容：</strong> 主にPvPです。サバイバルもあります。</p>
-            <p><strong>ルール：</strong> Not Cheating Bruh!</p>
+            <p><strong class="lang" data-ja="サーバー名：" data-en="Server Name: ">サーバー名：</strong> Razyn Network</p>
+            <p><strong class="lang" data-ja="内容：" data-en="Description: ">内容：</strong> <span class="lang" data-ja="主にPvPです。サバイバルもあります。" data-en="Mainly PvP. Survival is also available.">主にPvPです。サバイバルもあります。</span></p>
+            <p><strong class="lang" data-ja="ルール：" data-en="Rules: ">ルール：</strong> Not Cheating Bruh!</p>
             <div class="link-buttons">
                 <a href="https://yuuma57475.github.io/zemusite/" target="_blank">HomePage</a>
                 <a href="https://discord.gg/SaEtNBVjBa" target="_blank">Discord</a>
@@ -226,11 +257,11 @@
         </section>
 
         <section id="projects">
-            <h2>Current Projects</h2>
+            <h2 class="lang" data-ja="Current Projects" data-en="Current Projects">Current Projects</h2>
             <ul>
-                <li><strong>Typing Quest:</strong> 新タイピングゲーム開発中！</li>
-                <li><strong>ROD WARS:</strong> Plugin開発中！</li>
-                <li><strong>BedWars1058 ReplayAddon:</strong> BedWars1058のAddonで今までReplayがなかったので自分が作成します！</li>
+                <li><strong class="lang" data-ja="Typing Quest:" data-en="Typing Quest:">Typing Quest:</strong> <span class="lang" data-ja="新タイピングゲーム開発中！" data-en="New typing game under development!">新タイピングゲーム開発中！</span></li>
+                <li><strong class="lang" data-ja="ROD WARS:" data-en="ROD WARS:">ROD WARS:</strong> <span class="lang" data-ja="Plugin開発中！" data-en="Plugin under development!">Plugin開発中！</span></li>
+                <li><strong class="lang" data-ja="BedWars1058 ReplayAddon:" data-en="BedWars1058 ReplayAddon:">BedWars1058 ReplayAddon:</strong> <span class="lang" data-ja="BedWars1058のAddonで今までReplayがなかったので自分が作成します！" data-en="I'm creating a replay addon for BedWars1058 because it didn't exist until now!">BedWars1058のAddonで今までReplayがなかったので自分が作成します！</span></li>
             </ul>
         </section>
     </div>
@@ -240,14 +271,19 @@ function toggleMenu() {
     document.getElementById("side-menu").classList.toggle("open");
     document.getElementById("menu-overlay").classList.toggle("open");
 }
+
+function switchLang(lang) {
+    const elements = document.querySelectorAll('.lang');
+    elements.forEach(el => {
+        const text = el.getAttribute('data-' + lang);
+        if (text) {
+            el.textContent = text;
+        }
+    });
+    // 言語設定に合わせてHTMLのlang属性も変更
+    document.documentElement.lang = lang;
+}
 </script>
 
 </body>
 </html>
-
-
-
-
-
-
-
