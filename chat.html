@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>METASUKE ｜ チャットコミュニティ</title>
+    
+    <link rel="icon" href="favicon.jpg" type="image/jpeg">
+    <style>
+        :root {
+            --main-bg: #ffffffb5;
+            --card-bg: rgba(26, 26, 26, 0.9);
+            --accent-color: #00d2ff; 
+            --text-color: #ffffff;
+            --error-color: #ff4d4d;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-image: url('background.jpg');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            color: var(--text-color);
+            margin: 0;
+            line-height: 1.6;
+        }
+
+        /* サイドメニュー等の共通CSSは継承 */
+        /* (長くなるため中略していますが、元のindex.htmlのCSSをそのまま貼ってください) */
+        
+        /* チャット専用スタイル */
+        .chat-container {
+            max-width: 900px;
+            margin: 100px auto 50px;
+            padding: 0 20px;
+        }
+
+        .chat-box {
+            background: var(--card-bg);
+            padding: 20px;
+            border-radius: 15px;
+            height: 400px;
+            overflow-y: auto;
+            border: 1px solid #444;
+            margin-bottom: 20px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .message {
+            margin-bottom: 15px;
+            padding: 10px;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .message-user {
+            color: var(--accent-color);
+            font-weight: bold;
+            font-size: 0.9rem;
+        }
+
+        .input-area {
+            background: var(--card-bg);
+            padding: 20px;
+            border-radius: 15px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        input[type="text"] {
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px solid var(--accent-color);
+            color: white;
+            padding: 12px;
+            border-radius: 5px;
+            outline: none;
+        }
+
+        .btn-send {
+            background: var(--accent-color);
+            color: black;
+            border: none;
+            padding: 12px;
+            border-radius: 5px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .btn-send:hover {
+            background: #00b8e6;
+            transform: translateY(-2px);
+        }
+
+        .status-msg {
+            font-size: 0.8rem;
+            margin-top: 5px;
+        }
+
+        /* --- ヘッダー・メニュー用 (index.htmlから流用) --- */
+        #menu-toggle { position: fixed; top: 20px; left: 20px; cursor: pointer; z-index: 1002; padding: 10px; }
+        #menu-toggle span { display: block; width: 30px; height: 4px; background-color: white; margin-bottom: 5px; border-radius: 2px; }
+        #side-menu { position: fixed; top: 0; left: -280px; width: 280px; height: 100%; background-color: #1a1a1a; transition: 0.4s ease; z-index: 1001; padding-top: 60px; }
+        #side-menu.open { left: 0; }
+        #side-menu ul { list-style: none; padding: 0; }
+        #side-menu ul li a { display: block; padding: 15px 25px; color: var(--accent-color); text-decoration: none; border-bottom: 1px solid #333; }
+        .close-btn { color: white; padding: 10px 20px; cursor: pointer; text-align: right; }
+        #menu-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 1000; }
+        #menu-overlay.open { display: block; }
+    </style>
+</head>
+<body>
+
+<div id="menu-toggle" onclick="toggleMenu()">
+    <span></span><span></span><span></span>
+</div>
+<div id="side-menu">
+    <nav>
+        <ul>
+            <li><a href="index.html">Home</a></li>
+            <li><a href="store.html">Store</a></li>
+            <li><a href="forum.html">Forum</a></li>
+            <li><a href="plugin.html">Plugin配布</a></li>
+            <li><a href="chat.html">Chat・Community</a></li>
+        </ul>
+    </nav>
+    <div class="close-btn" onclick="toggleMenu()">&times; Close</div>
+</div>
+<div id="menu-overlay" onclick="toggleMenu()"></div>
+
+<div class="chat-container">
+    <h2 style="text-align: center; color: var(--accent-color);">COMMUNITY CHAT</h2>
+    
+    <div class="chat-box" id="chatBox">
+        <div class="message">
+            <span class="message-user">System:</span>
+            <span>チャットへようこそ！公序良俗を守って楽しく会話しましょう。</span>
+        </div>
+        </div>
+
+    <div class="input-area">
+        <input type="text" id="userName" placeholder="名前 (一度使うと変更できません)" />
+        <input type="text" id="userMsg" placeholder="メッセージを入力..." />
+        <button class="btn-send" onclick="sendMessage()">送信</button>
+        <div id="statusLabel" class="status-msg"></div>
+    </div>
+</div>
+
+<script>
+    const GAS_URL = "https://script.google.com/macros/s/AKfycbxWL72M4ij4zym0ZjikjbrY6n0tw_oMYRh5mvgUt5eLha1m4mec-DjUnb6w3HOAtnp6zA/exec";
+
+    // ページ読み込み時に保存された名前を取得
+    window.onload = () => {
+        const savedName = localStorage.getItem("chat_user_name");
+        if (savedName) {
+            const nameInput = document.getElementById("userName");
+            nameInput.value = savedName;
+            nameInput.readOnly = true; // 保存されている場合は変更不可
+            nameInput.style.opacity = "0.6";
+        }
+        fetchMessages();
+    };
+
+    function toggleMenu() {
+        document.getElementById("side-menu").classList.toggle("open");
+        document.getElementById("menu-overlay").classList.toggle("open");
+    }
+
+    async function sendMessage() {
+        const nameInput = document.getElementById("userName");
+        const msgInput = document.getElementById("userMsg");
+        const status = document.getElementById("statusLabel");
+        
+        const name = nameInput.value.trim();
+        const message = msgInput.value.trim();
+
+        if (!name || !message) {
+            alert("名前とメッセージを入力してください");
+            return;
+        }
+
+        status.innerText = "送信中...";
+        status.style.color = "var(--accent-color)";
+
+        try {
+            const response = await fetch(GAS_URL, {
+                method: "POST",
+                body: JSON.stringify({ name: name, message: message })
+            });
+            const result = await response.json();
+
+            if (result.success) {
+                // 名前をブラウザに保存
+                localStorage.setItem("chat_user_name", name);
+                nameInput.readOnly = true;
+                nameInput.style.opacity = "0.6";
+                
+                msgInput.value = "";
+                status.innerText = "送信完了！";
+                fetchMessages(); // チャット更新
+            } else {
+                // 偽造防止（名前重複など）のメッセージを表示
+                status.innerText = result.error || "その名前は既に使用されています。";
+                status.style.color = "var(--error-color)";
+            }
+        } catch (e) {
+            status.innerText = "エラーが発生しました。";
+            status.style.color = "var(--error-color)";
+        }
+    }
+
+    async function fetchMessages() {
+        try {
+            const response = await fetch(GAS_URL);
+            const data = await response.json();
+            const chatBox = document.getElementById("chatBox");
+            
+            // 既存のメッセージをクリア（Systemメッセージ以外）
+            chatBox.innerHTML = '<div class="message"><span class="message-user">System:</span> <span>チャットへようこそ！</span></div>';
+
+            data.messages.forEach(m => {
+                const div = document.createElement("div");
+                div.className = "message";
+                div.innerHTML = `<span class="message-user">${m.name}:</span> <span>${m.text}</span>`;
+                chatBox.appendChild(div);
+            });
+            chatBox.scrollTop = chatBox.scrollHeight;
+        } catch (e) {
+            console.error("読み込みエラー", e);
+        }
+    }
+
+    // 5秒ごとに自動更新
+    setInterval(fetchMessages, 5000);
+</script>
+
+</body>
+</html>
