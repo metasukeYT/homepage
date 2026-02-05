@@ -23,34 +23,33 @@
             color: var(--text-color);
             margin: 0;
             line-height: 1.6;
+            top: 0 !important; /* Google翻訳のバー対策 */
         }
 
-        /* --- 言語切り替えボタン（右上固定） --- */
+        /* --- 言語切り替え（Google自動翻訳） --- */
         .lang-switcher {
             position: fixed;
             top: 20px;
             right: 20px;
-            z-index: 1002;
-            display: flex;
-            gap: 8px;
-        }
-
-        .lang-switcher button {
-            background: rgba(26, 26, 26, 0.6);
-            color: var(--accent-color);
+            z-index: 1100;
+            background: rgba(26, 26, 26, 0.7);
+            padding: 5px 10px;
+            border-radius: 8px;
             border: 1px solid var(--accent-color);
-            padding: 5px 12px;
-            border-radius: 5px;
-            cursor: pointer;
-            font-weight: bold;
-            transition: 0.3s;
             backdrop-filter: blur(5px);
         }
 
-        .lang-switcher button:hover {
-            background: var(--accent-color);
-            color: #000;
+        /* Google翻訳のデザインをサイトに馴染ませる */
+        .goog-te-gadget-simple {
+            background-color: transparent !important;
+            border: none !important;
+            font-size: 14px !important;
         }
+        .goog-te-gadget-simple span {
+            color: var(--accent-color) !important;
+        }
+        .goog-te-banner-frame.skiptranslate { display: none !important; }
+        .goog-te-gadget-icon { display: none !important; }
 
         /* --- サイドメニューのCSS --- */
         #menu-toggle {
@@ -61,7 +60,6 @@
             z-index: 1002;
             padding: 10px;
         }
-
         #menu-toggle span {
             display: block;
             width: 30px;
@@ -71,7 +69,6 @@
             border-radius: 2px;
             box-shadow: 0 0 5px rgba(0,0,0,0.5);
         }
-
         #side-menu {
             position: fixed;
             top: 0;
@@ -84,23 +81,9 @@
             padding-top: 60px;
             box-shadow: 2px 0 10px rgba(0,0,0,0.5);
         }
-
-        #side-menu.open {
-            left: 0; 
-        }
-
-        .close-btn {
-            color: white;
-            padding: 10px 20px;
-            cursor: pointer;
-            text-align: right;
-        }
-
-        #side-menu ul {
-            list-style: none;
-            padding: 0;
-        }
-
+        #side-menu.open { left: 0; }
+        .close-btn { color: white; padding: 10px 20px; cursor: pointer; text-align: right; }
+        #side-menu ul { list-style: none; padding: 0; }
         #side-menu ul li a {
             display: block;
             padding: 15px 25px;
@@ -110,26 +93,15 @@
             border-bottom: 1px solid #333;
         }
 
-        #side-menu ul li a:hover {
-            background-color: #333;
-        }
-
         #menu-overlay {
             display: none;
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
+            top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(0,0,0,0.6);
             z-index: 1000;
         }
+        #menu-overlay.open { display: block; }
 
-        #menu-overlay.open {
-            display: block;
-        }
-
-        /* --- ヘッダー --- */
         header {
             height: 60vh;
             display: flex;
@@ -139,151 +111,9 @@
             background: transparent; 
             text-align: center;
         }
-
         header h1 {
-            font-size: 4rem;
-            margin: 0;
+            font-size: 4rem; margin: 0;
             color: var(--accent-color);
             text-shadow: 2px 2px 10px rgba(0, 0, 0, 0.8);
         }
-
-        header p {
-            font-size: 1.5rem;
-            text-shadow: 1px 1px 5px rgba(0, 0, 0, 0.8);
-        }
-
-        /* --- コンテンツエリア --- */
-        .container {
-            max-width: 900px;
-            margin: -50px auto 50px;
-            padding: 0 20px;
-            position: relative;
-            z-index: 1;
-        }
-
-        section {
-            background: var(--card-bg);
-            padding: 30px;
-            border-radius: 15px;
-            margin-bottom: 30px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-            backdrop-filter: blur(5px);
-        }
-
-        h1, h2 { color: var(--accent-color); }
-
-        .server-status {
-            display: inline-block;
-            background: #27ae60;
-            padding: 5px 15px;
-            border-radius: 20px;
-            font-size: 0.9rem;
-            margin-bottom: 10px;
-        }
-
-        .link-buttons a {
-            display: inline-block;
-            padding: 10px 20px;
-            margin: 5px;
-            background: #333;
-            color: white;
-            text-decoration: none;
-            border-radius: 5px;
-            transition: 0.3s;
-            border: 1px solid var(--accent-color);
-        }
-
-        .link-buttons a:hover {
-            background: var(--accent-color);
-            color: #000;
-        }
-    </style>
-</head>
-<body>
-
-<div class="lang-switcher">
-    <button onclick="switchLang('ja')">JP</button>
-    <button onclick="switchLang('en')">EN</button>
-</div>
-
-<div id="menu-toggle" onclick="toggleMenu()">
-    <span></span>
-    <span></span>
-    <span></span>
-</div>
-
-<div id="side-menu">
-    <nav>
-        <ul>
-            <li><a href="index.html">Home</a></li>
-            <li><a href="store.html">Store</a></li>
-            <li><a href="forum.html">Forum</a></li>
-            <li><a href="plugin.html">Plugin配布</a></li>
-        </ul>
-    </nav>
-    <div class="close-btn" onclick="toggleMenu()">&times; Close</div>
-</div>
-
-<div id="menu-overlay" onclick="toggleMenu()"></div>
-
-    <header>
-        <h1 class="lang" data-ja="METASUKE" data-en="METASUKE">METASUKE</h1>
-        <p class="lang" data-ja="めたすけのホームページ" data-en="Metasuke's Homepage">めたすけのホームページ</p>
-    </header>
-
-    <div class="container">
-        <section id="about">
-            <h2 class="lang" data-ja="About Me" data-en="About Me">About Me</h2>
-            <p class="lang" data-ja="最近バイブコーディング始めました！" data-en="I recently started vibe coding!">最近バイブコーディング始めました！</p>
-            <p class="lang" data-ja="自分でもコード書きたい..." data-en="I want to write code myself...">自分でもコード書きたい...</p>
-            <div class="link-buttons">
-                <a href="https://www.youtube.com/@metasukech" target="_blank">Youtube Channel</a>
-                <a href="https://www.youtube.com/@metasuke-271" target="_blank">Sub Channel</a>
-                <a href="https://www.scratch.mit.edu/users/mc_karbon/" target="_blank">Scratch</a>
-                <a href="https://www.geartics.com/metasukech" target="_blank">Device</a>
-            </div>
-        </section>
-
-        <section id="server">
-            <h2 class="lang" data-ja="Server Information" data-en="Server Information">Server Information</h2>
-            <div class="server-status">Online</div>
-            <p><strong class="lang" data-ja="サーバー名：" data-en="Server Name: ">サーバー名：</strong> Razyn Network</p>
-            <p><strong class="lang" data-ja="内容：" data-en="Description: ">内容：</strong> <span class="lang" data-ja="主にPvPです。サバイバルもあります。" data-en="Mainly PvP. Survival is also available.">主にPvPです。サバイバルもあります。</span></p>
-            <p><strong class="lang" data-ja="ルール：" data-en="Rules: ">ルール：</strong> Not Cheating Bruh!</p>
-            <div class="link-buttons">
-                <a href="https://yuuma57475.github.io/zemusite/" target="_blank">HomePage</a>
-                <a href="https://discord.gg/SaEtNBVjBa" target="_blank">Discord</a>
-            </div>
-        </section>
-
-        <section id="projects">
-            <h2 class="lang" data-ja="Current Projects" data-en="Current Projects">Current Projects</h2>
-            <ul>
-                <li><strong class="lang" data-ja="Typing Quest:" data-en="Typing Quest:">Typing Quest:</strong> <span class="lang" data-ja="新タイピングゲーム開発中！" data-en="New typing game under development!">新タイピングゲーム開発中！</span></li>
-                <li><strong class="lang" data-ja="ROD WARS:" data-en="ROD WARS:">ROD WARS:</strong> <span class="lang" data-ja="Plugin開発中！" data-en="Plugin under development!">Plugin開発中！</span></li>
-                <li><strong class="lang" data-ja="BedWars1058 ReplayAddon:" data-en="BedWars1058 ReplayAddon:">BedWars1058 ReplayAddon:</strong> <span class="lang" data-ja="BedWars1058のAddonで今までReplayがなかったので自分が作成します！" data-en="I'm creating a replay addon for BedWars1058 because it didn't exist until now!">BedWars1058のAddonで今までReplayがなかったので自分が作成します！</span></li>
-            </ul>
-        </section>
-    </div>
-
-<script>
-function toggleMenu() {
-    document.getElementById("side-menu").classList.toggle("open");
-    document.getElementById("menu-overlay").classList.toggle("open");
-}
-
-function switchLang(lang) {
-    const elements = document.querySelectorAll('.lang');
-    elements.forEach(el => {
-        const text = el.getAttribute('data-' + lang);
-        if (text) {
-            el.textContent = text;
-        }
-    });
-    // 言語設定に合わせてHTMLのlang属性も変更
-    document.documentElement.lang = lang;
-}
-</script>
-
-</body>
-</html>
+        header p { font-size: 1.5rem; text-shadow: 1px
