@@ -1,1 +1,197 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Plugin配布 ｜ METASUKE</title>
+    
+    <link rel="icon" href="favicon.jpg" type="image/jpeg">
+    <style>
+        /* メインのスタイルを継承 */
+        :root {
+            --main-bg: #ffffffb5;
+            --card-bg: rgba(26, 26, 26, 0.9);
+            --accent-color: #00d2ff; 
+            --text-color: #ffffff;
+            --download-btn: #00d2ff;
+        }
 
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-image: url('background.jpg');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            color: var(--text-color);
+            margin: 0;
+            line-height: 1.6;
+        }
+
+        /* --- サイドメニューCSS (共通) --- */
+        #menu-toggle { position: fixed; top: 20px; left: 20px; cursor: pointer; z-index: 1002; padding: 10px; }
+        #menu-toggle span { display: block; width: 30px; height: 4px; background-color: white; margin-bottom: 5px; border-radius: 2px; box-shadow: 0 0 5px rgba(0,0,0,0.5); }
+        #side-menu { position: fixed; top: 0; left: -280px; width: 280px; height: 100%; background-color: #1a1a1a; transition: 0.4s ease; z-index: 1001; padding-top: 60px; box-shadow: 2px 0 10px rgba(0,0,0,0.5); }
+        #side-menu.open { left: 0; }
+        .close-btn { color: white; padding: 10px 20px; cursor: pointer; text-align: right; }
+        #side-menu ul { list-style: none; padding: 0; }
+        #side-menu ul li a { display: block; padding: 15px 25px; color: var(--accent-color); text-decoration: none; font-size: 1.2rem; border-bottom: 1px solid #333; }
+        #side-menu ul li a:hover { background-color: #333; }
+        #menu-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 1000; }
+        #menu-overlay.open { display: block; }
+
+        /* --- ヘッダー --- */
+        header {
+            height: 40vh; /* 配布ページなので少し低めに設定 */
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background: transparent; 
+            text-align: center;
+        }
+
+        header h1 {
+            font-size: 3.5rem;
+            margin: 0;
+            color: var(--accent-color);
+            text-shadow: 2px 2px 10px rgba(0, 0, 0, 0.8);
+        }
+
+        /* --- プラグインリスト --- */
+        .container {
+            max-width: 900px;
+            margin: -30px auto 50px;
+            padding: 0 20px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .plugin-card {
+            background: var(--card-bg);
+            padding: 30px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            backdrop-filter: blur(5px);
+            border-left: 5px solid var(--accent-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .plugin-info {
+            flex: 1;
+            min-width: 300px;
+        }
+
+        .plugin-info h3 {
+            margin: 0 0 10px 0;
+            font-size: 1.8rem;
+            color: var(--accent-color);
+        }
+
+        .plugin-meta {
+            font-size: 0.85rem;
+            color: #bbb;
+            margin-bottom: 10px;
+        }
+
+        .version-tag {
+            background: #444;
+            padding: 2px 8px;
+            border-radius: 4px;
+            margin-right: 10px;
+        }
+
+        /* --- ダウンロードボタン --- */
+        .download-button {
+            display: inline-block;
+            padding: 15px 30px;
+            background: var(--accent-color);
+            color: #000;
+            text-decoration: none;
+            font-weight: bold;
+            border-radius: 8px;
+            transition: 0.3s transform, 0.3s background;
+            cursor: pointer;
+            border: none;
+            font-size: 1rem;
+        }
+
+        .download-button:hover {
+            transform: scale(1.05);
+            background: #fff;
+            box-shadow: 0 0 15px var(--accent-color);
+        }
+
+        .download-button:active {
+            transform: scale(0.95);
+        }
+
+    </style>
+</head>
+<body>
+
+<div id="menu-toggle" onclick="toggleMenu()">
+    <span></span><span></span><span></span>
+</div>
+<div id="side-menu">
+    <nav>
+        <ul>
+            <li><a href="index.html">Home</a></li>
+            <li><a href="store.html">Store</a></li>
+            <li><a href="forum.html">Forum</a></li>
+            <li><a href="Plugin.html">Plugin配布</a></li>
+        </ul>
+    </nav>
+    <div class="close-btn" onclick="toggleMenu()">&times; Close</div>
+</div>
+<div id="menu-overlay" onclick="toggleMenu()"></div>
+
+<header>
+    <h1>Plugin Download</h1>
+    <p>開発したプラグインを公開しています</p>
+</header>
+
+<div class="container">
+    
+    <div class="plugin-card">
+        <div class="plugin-info">
+            <div class="plugin-meta">
+                <span class="version-tag">Ver 1.0.0</span>
+                <span>Category: BedWars Addon</span>
+            </div>
+            <h3>BedWars1058 ReplayAddon</h3>
+            <p>BedWars1058にリプレイ機能を追加する待望のアドオンです。試合の振り返りや動画撮影に最適です。</p>
+        </div>
+        <a href="plugins/bw-replay-addon.jar" download class="download-button">
+            Download .jar
+        </a>
+    </div>
+
+    <div class="plugin-card">
+        <div class="plugin-info">
+            <div class="plugin-meta">
+                <span class="version-tag">Ver 2.1.0</span>
+                <span>Category: Game Logic</span>
+            </div>
+            <h3>ROD WARS Plugin</h3>
+            <p>独自のROD WARSゲームシステムを構築するためのメインプラグインです。</p>
+        </div>
+        <a href="plugins/rod-wars.jar" download class="download-button">
+            Download .jar
+        </a>
+    </div>
+
+</div>
+
+<script>
+function toggleMenu() {
+    document.getElementById("side-menu").classList.toggle("open");
+    document.getElementById("menu-overlay").classList.toggle("open");
+}
+</script>
+
+</body>
+</html>
