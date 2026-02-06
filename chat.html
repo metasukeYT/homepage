@@ -17,7 +17,7 @@
 
         body {
             font-family: 'Helvetica Neue', Arial, 'Hiragino Kaku Gothic ProN', 'Hiragino Sans', Meiryo, sans-serif;
-            background-image: url('background.jpg'); /* ここを背景画像に合わせる */
+            background-image: url('background.jpg');
             background-size: cover;
             background-position: center;
             background-attachment: fixed;
@@ -37,7 +37,6 @@
         #menu-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 1000; }
         #menu-overlay.open { display: block; }
 
-        /* --- ヒーローセクション（画像のデザインに合わせる） --- */
         .hero-section {
             height: 40vh;
             display: flex;
@@ -57,10 +56,9 @@
             font-weight: bold;
         }
 
-        /* --- チャットエリアのスタイル --- */
         .chat-container {
             max-width: 900px;
-            margin: -50px auto 50px; /* ヒーローセクションに少し被せる */
+            margin: -50px auto 50px;
             padding: 0 20px;
             position: relative;
             z-index: 10;
@@ -80,7 +78,6 @@
             box-shadow: 0 -10px 30px rgba(0,0,0,0.5);
         }
 
-        /* メッセージの見た目 */
         .message {
             margin-bottom: 12px;
             padding: 12px 15px;
@@ -101,7 +98,6 @@
             margin-right: 10px;
         }
 
-        /* 入力エリア */
         .input-area {
             background: #222;
             padding: 25px;
@@ -179,8 +175,7 @@
 </header>
 
 <div class="chat-container">
-    <div class="chat-box" id="chatBox">
-        </div>
+    <div class="chat-box" id="chatBox"></div>
 
     <div class="input-area">
         <div style="display: flex; gap: 10px;">
@@ -193,8 +188,8 @@
 </div>
 
 <script>
-    // --- 既存のJavaScript処理（GAS_URLなどはそのまま使用） ---
-    const GAS_URL = "https://script.google.com/macros/s/AKfycbxJhd0Y5CemLGBnoJoWVYEpN7G2gmX3yYX0LJbSkVVgtJl3MRN3LIw6YgDBA3aqHV8Sog/exec";
+    // 新しいURLに差し替え済み
+    const GAS_URL = "https://script.google.com/macros/s/AKfycbxIAjMoEaZSBpY1lLAEPPIF6Sni7lDpFFGgllSaH8htgb8LImA4MR8X_4DUmvGy_yZd/exec";
 
     window.onload = () => {
         const savedName = localStorage.getItem("chat_user_name");
@@ -235,7 +230,8 @@
         try {
             const response = await fetch(GAS_URL, {
                 method: "POST",
-                body: JSON.stringify({ name: name, message: message })
+                // type: "chat" を追加して仕分け
+                body: JSON.stringify({ name: name, message: message, type: "chat" }) 
             });
             const result = await response.json();
 
@@ -261,7 +257,8 @@
 
     async function fetchMessages() {
         try {
-            const response = await fetch(GAS_URL);
+            // URLパラメータに type=chat を追加
+            const response = await fetch(GAS_URL + "?type=chat");
             const data = await response.json();
             const chatBox = document.getElementById("chatBox");
             
