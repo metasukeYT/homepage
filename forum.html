@@ -7,17 +7,22 @@
     <link rel="icon" href="favicon.jpg" type="image/jpeg">
     <style>
         :root {
-            --main-bg: #ffffffb5;
-            --card-bg: rgba(26, 26, 26, 0.9);
+            --main-bg: rgba(0, 0, 0, 0.4);
+            --card-bg: rgba(26, 26, 26, 0.85);
             --accent-color: #00d2ff; 
             --text-color: #ffffff;
+            --error-color: #ff4d4d;
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Helvetica Neue', Arial, 'Hiragino Kaku Gothic ProN', 'Hiragino Sans', Meiryo, sans-serif;
             background-image: url('background.jpg');
-            background-size: cover; background-position: center; background-attachment: fixed;
-            color: var(--text-color); margin: 0; line-height: 1.6; top: 0 !important;
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            color: var(--text-color);
+            margin: 0;
+            line-height: 1.6;
         }
 
         /* --- UI Elements --- */
@@ -27,29 +32,66 @@
 
         #menu-toggle { position: fixed; top: 20px; left: 20px; cursor: pointer; z-index: 1002; padding: 10px; }
         #menu-toggle span { display: block; width: 30px; height: 4px; background-color: white; margin-bottom: 5px; border-radius: 2px; }
-        #side-menu { position: fixed; top: 0; left: -280px; width: 280px; height: 100%; background-color: #1a1a1a; transition: 0.4s ease; z-index: 1001; padding-top: 60px; box-shadow: 2px 0 10px rgba(0,0,0,0.5); }
+        #side-menu { position: fixed; top: 0; left: -280px; width: 280px; height: 100%; background-color: #1a1a1a; transition: 0.4s ease; z-index: 1001; padding-top: 60px; }
         #side-menu.open { left: 0; }
         #side-menu ul { list-style: none; padding: 0; }
-        #side-menu ul li a { display: block; padding: 15px 25px; color: var(--accent-color); text-decoration: none; font-size: 1.2rem; border-bottom: 1px solid #333; }
+        #side-menu ul li a { display: block; padding: 15px 25px; color: var(--accent-color); text-decoration: none; border-bottom: 1px solid #333; }
         #menu-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 1000; }
         #menu-overlay.open { display: block; }
 
-        header { height: 30vh; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; }
-        header h1 { font-size: 3.5rem; margin: 0; color: var(--accent-color); text-shadow: 2px 2px 10px rgba(0, 0, 0, 0.8); }
+        /* デザイン統一用ヒーローセクション */
+        header {
+            height: 40vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background: linear-gradient(rgba(0,0,0,0.2), rgba(0,0,0,0.5));
+            text-align: center;
+            text-shadow: 0 0 15px rgba(0, 210, 255, 0.7);
+        }
+        header h1 { font-size: 3.5rem; margin: 0; color: var(--accent-color); font-weight: bold; letter-spacing: 4px; }
 
-        .container { max-width: 900px; margin: 0 auto 50px; padding: 0 20px; position: relative; z-index: 1; }
+        .container { max-width: 900px; margin: -50px auto 50px; padding: 0 20px; position: relative; z-index: 10; }
 
         /* --- Forum Cards --- */
-        .forum-card { background: var(--card-bg); padding: 25px; border-radius: 15px; margin-bottom: 20px; border-left: 4px solid var(--accent-color); transition: 0.3s; }
-        .forum-card:hover { background: rgba(40, 40, 40, 0.95); }
+        .forum-card { 
+            background: var(--card-bg); 
+            padding: 25px; 
+            border-radius: 15px; 
+            margin-bottom: 20px; 
+            border-left: 4px solid var(--accent-color); 
+            backdrop-filter: blur(10px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            transition: 0.3s; 
+        }
+        .forum-card:hover { transform: translateY(-5px); background: rgba(40, 40, 40, 0.9); }
         .meta { font-size: 0.8rem; color: #bbb; margin-bottom: 10px; }
-        .tag { background: #333; padding: 2px 8px; border-radius: 4px; color: var(--accent-color); margin-right: 10px; }
-        .forum-card p { white-space: pre-wrap; word-break: break-all; margin-top: 10px; }
+        .tag { background: #333; padding: 2px 8px; border-radius: 4px; color: var(--accent-color); margin-right: 10px; font-weight: bold; }
+        .forum-card h3 { margin: 10px 0; color: var(--accent-color); }
+        .forum-card p { white-space: pre-wrap; word-break: break-all; margin-top: 10px; color: #eee; }
 
-        .forum-form { background: var(--card-bg); padding: 25px; border-radius: 15px; margin-bottom: 40px; display: none; border: 1px solid var(--accent-color); }
+        .forum-form { 
+            background: #222; 
+            padding: 25px; 
+            border-radius: 15px; 
+            margin-bottom: 40px; 
+            display: none; 
+            border: 1px solid rgba(255, 255, 255, 0.1); 
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
         .forum-form.active { display: block; }
-        input, textarea { width: 100%; padding: 12px; margin-bottom: 15px; border-radius: 6px; border: 1px solid #444; background: #222; color: #fff; box-sizing: border-box; }
-        .btn-main { background: var(--accent-color); color: #000; padding: 10px 25px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; transition: 0.3s; }
+        input, textarea { 
+            width: 100%; padding: 12px; margin-bottom: 15px; border-radius: 6px; 
+            border: 1px solid #444; background: rgba(0,0,0,0.3); color: #fff; box-sizing: border-box; outline: none;
+        }
+        input:focus, textarea:focus { border-color: var(--accent-color); }
+        
+        .btn-main { 
+            background: var(--accent-color); color: #000; padding: 12px 30px; border: none; 
+            border-radius: 8px; font-weight: bold; cursor: pointer; transition: 0.3s; text-transform: uppercase;
+        }
+        .btn-main:hover { background: #fff; box-shadow: 0 0 15px var(--accent-color); transform: translateY(-2px); }
     </style>
 </head>
 <body>
@@ -79,8 +121,8 @@
 <div id="menu-overlay" onclick="toggleMenu()"></div>
 
 <header>
-    <h1>Forum</h1>
-    <p>募集・Plugin作成依頼</p>
+    <h1>FORUM</h1>
+    <p style="color: rgba(255,255,255,0.7);">募集・Plugin作成依頼</p>
 </header>
 
 <div class="container">
@@ -92,49 +134,51 @@
         <input type="text" placeholder="名前 (Name)" id="userName">
         <input type="text" placeholder="タイトル (Title)" id="postTitle">
         <textarea placeholder="内容 (Content)" id="postContent" rows="5"></textarea>
-        <button class="btn-main notranslate" onclick="submitPost()">Submit</button>
+        <button class="btn-main notranslate" onclick="submitPost()">Submit Post</button>
     </div>
 
     <div id="forumList">データを読み込み中...</div>
 </div>
 
 <script>
-    // ✅ URLを更新しました
-    const APP_URL = "https://script.google.com/macros/s/AKfycbzElLvxHvIg36hX_K6FY4jtV3dcC1Ie_snQi092G8ITSYrwf_Khvciiiap-Glh9HfZnTg/exec";
+    // ✅ チャットと同じURLを使用
+    const APP_URL = "https://script.google.com/macros/s/AKfycbxIAjMoEaZSBpY1lLAEPPIF6Sni7lDpFFGgllSaH8htgb8LImA4MR8X_4DUmvGy_yZd/exec";
 
     async function loadPosts() {
         try {
-            const response = await fetch(APP_URL);
-            const posts = await response.json();
+            // URLパラメータに type=forum を指定して読み込み
+            const response = await fetch(APP_URL + "?type=forum");
+            const data = await response.json();
             const list = document.getElementById('forumList');
             list.innerHTML = '';
             
-            if (!posts || posts.length === 0) {
+            if (!data.messages || data.messages.length === 0) {
                 list.innerHTML = "<p style='text-align:center;'>まだ投稿がありません。</p>";
                 return;
             }
 
-            posts.reverse().forEach(p => {
-                const date = new Date(p[0]).toLocaleString('ja-JP');
+            // GAS側の .gs コードの構造に合わせて [名前, タイトル, 内容, 日付] と想定
+            // もし .gs でオブジェクト形式 (name, text...) で返しているならそれに合わせます
+            data.messages.reverse().forEach(m => {
+                const date = m.date ? new Date(m.date).toLocaleString('ja-JP') : "不明";
                 list.innerHTML += `
                     <div class="forum-card">
                         <div class="meta">
                             <span class="tag">Post</span>
-                            <span><b>${p[1]}</b></span> • <span>${date}</span>
+                            <span><b>${escapeHtml(m.name)}</b></span> • <span>${date}</span>
                         </div>
-                        <h3>${p[2]}</h3>
-                        <p>${p[3]}</p>
+                        <h3>${escapeHtml(m.text.split('\n')[0])}</h3> <p>${escapeHtml(m.text)}</p>
                     </div>
                 `;
             });
         } catch (e) {
-            document.getElementById('forumList').innerText = "データの取得に失敗しました。GASの設定を確認してください。";
+            document.getElementById('forumList').innerText = "データの取得に失敗しました。";
         }
     }
 
     async function submitPost() {
         const btn = document.querySelector("#postForm .btn-main");
-        const user = document.getElementById('userName').value || "Guest";
+        const name = document.getElementById('userName').value || "Guest";
         const title = document.getElementById('postTitle').value;
         const content = document.getElementById('postContent').value;
 
@@ -146,12 +190,16 @@
         btn.innerText = "Sending...";
         btn.disabled = true;
 
-        const data = { user, title, content };
+        // type: "forum" を含めて送信
+        const data = { 
+            name: name, 
+            message: `【${title}】\n${content}`, // タイトルと内容を合体させて保存
+            type: "forum" 
+        };
 
         try {
             await fetch(APP_URL, {
                 method: "POST",
-                mode: "no-cors",
                 body: JSON.stringify(data)
             });
 
@@ -159,9 +207,14 @@
             location.reload(); 
         } catch (e) {
             alert("エラーが発生しました。");
-            btn.innerText = "Submit";
+            btn.innerText = "Submit Post";
             btn.disabled = false;
         }
+    }
+
+    function escapeHtml(str) {
+        if (!str) return "";
+        return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
     }
 
     function toggleForm() { document.getElementById('postForm').classList.toggle('active'); }
@@ -169,17 +222,6 @@
 
     function googleTranslateElementInit() {
         new google.translate.TranslateElement({pageLanguage: 'ja', includedLanguages: 'ja,en,ko,zh-CN,vi', autoDisplay: false}, 'google_translate_element');
-        setTimeout(() => {
-            const savedLang = localStorage.getItem('selectedLang');
-            if (savedLang) {
-                const googleSelect = document.querySelector('#google_translate_element select');
-                if (googleSelect) { 
-                    googleSelect.value = savedLang; 
-                    googleSelect.dispatchEvent(new Event('change')); 
-                    document.getElementById('langSelect').value = savedLang; 
-                }
-            }
-        }, 1000);
     }
     function translatePage(lang) { localStorage.setItem('selectedLang', lang); location.reload(); }
 
